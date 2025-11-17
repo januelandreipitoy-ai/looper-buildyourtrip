@@ -82,6 +82,7 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
         maxZoom: 19,
+        className: 'map-tiles',
       }).addTo(map);
 
       mapInstanceRef.current = map;
@@ -158,10 +159,11 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
           const coordinates = route.geometry.coordinates.map((coord: [number, number]) => [coord[1], coord[0]]);
 
           const polyline = L.polyline(coordinates, {
-            color: 'hsl(var(--primary))',
-            weight: 4,
-            opacity: 0.8,
-            smoothFactor: 1
+            color: '#CBD83B',
+            weight: 6,
+            opacity: 1,
+            smoothFactor: 1,
+            className: 'route-line'
           }).addTo(map);
 
           polylineRef.current = polyline;
@@ -177,10 +179,11 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
         const simplePolyline = L.polyline(
           locations.map(loc => [loc.lat, loc.lon]),
           {
-            color: 'hsl(var(--primary))',
-            weight: 4,
-            opacity: 0.6,
-            dashArray: '10, 10'
+            color: '#CBD83B',
+            weight: 6,
+            opacity: 1,
+            dashArray: '10, 10',
+            className: 'route-line'
           }
         ).addTo(map);
 
@@ -225,7 +228,20 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
           </div>
         </div>
       ) : (
-        <div ref={mapContainerRef} className="w-full h-full rounded-lg overflow-hidden" />
+        <>
+          <style>{`
+            .map-tiles {
+              filter: grayscale(60%) brightness(1.1) contrast(0.7) saturate(0.4);
+            }
+            .route-line {
+              filter: drop-shadow(0 0 8px rgba(203, 216, 59, 0.8)) drop-shadow(0 0 16px rgba(203, 216, 59, 0.4));
+            }
+            .leaflet-container {
+              background: #f5f5f0 !important;
+            }
+          `}</style>
+          <div ref={mapContainerRef} className="w-full h-full rounded-lg overflow-hidden" />
+        </>
       )}
     </>
   );
