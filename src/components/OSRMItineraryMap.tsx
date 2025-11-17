@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { MapPin, Sun, Moon } from 'lucide-react';
+import { MapPin, Sun, Moon, Navigation } from 'lucide-react';
 import type { DayItinerary, TimeSlot } from '@/contexts/TripContext';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface OSRMItineraryMapProps {
   day: DayItinerary;
@@ -263,20 +269,22 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
               <Sun className="h-4 w-4" />
             )}
           </Button>
-          <div className="absolute bottom-4 right-4 z-[1000] flex gap-2">
-            <Button
-              onClick={handleOpenInWaze}
-              className="rounded-lg shadow-lg bg-background/95 hover:bg-background text-foreground border border-border"
-            >
-              Open in Waze
-            </Button>
-            <Button
-              onClick={handleOpenInGoogleMaps}
-              className="rounded-lg shadow-lg bg-background/95 hover:bg-background text-foreground border border-border"
-            >
-              Open in Google Maps
-            </Button>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="absolute bottom-4 right-4 z-[1000] rounded-lg shadow-lg bg-primary text-primary-foreground hover:bg-primary/90">
+                <Navigation className="h-4 w-4 mr-2" />
+                Navigate
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-background border border-border shadow-lg z-[1001]">
+              <DropdownMenuItem onClick={handleOpenInGoogleMaps} className="cursor-pointer">
+                Google Maps
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleOpenInWaze} className="cursor-pointer">
+                Waze
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       )}
     </>
