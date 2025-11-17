@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Lottie from 'lottie-react';
 import { Search as SearchIcon } from 'lucide-react';
 import { useTrip } from '@/contexts/TripContext';
-import animationData from '@/assets/where-to-animation.json';
+import animationData from '@/assets/looper-animation.json';
 
 // Famous destinations for the animated background columns
 const DESTINATIONS = [
@@ -74,11 +74,11 @@ export default function Search() {
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
       {/* Animated Background Columns */}
-      <div className="absolute inset-0 flex justify-between opacity-20">
+      <div className="absolute inset-0 flex gap-8 justify-center opacity-20 px-8">
         {DESTINATIONS.map((column, colIndex) => (
           <div
             key={colIndex}
-            className="flex flex-col gap-4 w-1/4 animate-scroll"
+            className="flex flex-col gap-8 flex-1 max-w-[400px]"
             style={{
               animation: colIndex % 2 === 0 
                 ? 'scrollUp 60s linear infinite' 
