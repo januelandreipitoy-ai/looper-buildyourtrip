@@ -10,8 +10,10 @@ const Pricing = () => {
       features: [
         'Single-city trip',
         'Basic recommendations',
-        'Basic routing',
-        'Limited destinations'
+        'Standard routing',
+        'No multi-day itineraries',
+        'No multi-city',
+        'No PDF export'
       ],
       cta: 'Get Started',
       highlighted: false
@@ -20,15 +22,16 @@ const Pricing = () => {
       name: 'Plus',
       price: '$9.99',
       priceNote: 'one-time',
-      description: 'Ideal for travelers planning their next adventure',
+      description: 'Best Value',
       features: [
         'Multi-day trips',
         'Multi-city trips',
-        'Multi-country itineraries',
-        'AI-optimized time & order',
-        'Accurate OSRM routes',
-        'PDF export',
-        'Offline itinerary + routing'
+        'Multi-country support',
+        'AI-optimized order & timing',
+        'Full OSRM accurate routing',
+        'PDF Export',
+        'Offline itinerary + offline routing',
+        'Priority loading of images'
       ],
       cta: 'Upgrade to Plus',
       highlighted: true
@@ -37,14 +40,15 @@ const Pricing = () => {
       name: 'Ultra',
       price: '$29.99',
       priceNote: 'one-time or annual',
-      description: 'For frequent travelers who want the best',
+      description: 'Premium experience for frequent travelers',
       features: [
-        'Everything in Plus',
         'Unlimited multi-country planning',
         'AI concierge',
-        'Weather & crowd smart reordering',
+        'Crowd + weather smart reordering',
+        'Early access features',
         'Priority image data',
-        'Early feature access'
+        'Premium map layers',
+        'Dedicated route cache for instant loading'
       ],
       cta: 'Upgrade to Ultra',
       highlighted: false
@@ -67,9 +71,11 @@ const Pricing = () => {
           {tiers.map((tier) => (
             <div
               key={tier.name}
-              className={`rounded-2xl p-8 ${
+              className={`rounded-2xl p-8 transition-all duration-300 ${
                 tier.highlighted
                   ? 'bg-gradient-to-br from-primary/10 to-accent/10 border-2 border-primary shadow-2xl scale-105'
+                  : tier.name === 'Ultra'
+                  ? 'bg-gradient-to-br from-secondary/5 to-accent/5 border-2 border-secondary shadow-lg'
                   : 'bg-card border border-border'
               }`}
             >
