@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
-import { MapPin } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { MapPin, Sun, Moon } from 'lucide-react';
 import type { DayItinerary, TimeSlot } from '@/contexts/TripContext';
+import { Button } from '@/components/ui/button';
 
 interface OSRMItineraryMapProps {
   day: DayItinerary;
@@ -26,6 +27,7 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
   const mapInstanceRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
   const polylineRef = useRef<any>(null);
+  const [mapTheme, setMapTheme] = useState<'light' | 'dark'>('light');
 
   // Extract all locations from the day's time slots with proper coordinate mapping
   const locations: Location[] = [
@@ -79,10 +81,10 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
         scrollWheelZoom: true,
       });
 
-      L.tileLayer('https://api.tomtom.com/map/1/tile/basic/main/{z}/{x}/{y}.png?key=CX4LKDD5dwr4AqhWesL9iz9o5Yh7Z1Ci', {
+      const tileStyle = mapTheme === 'dark' ? 'night' : 'main';
+      L.tileLayer(`https://api.tomtom.com/map/1/tile/basic/${tileStyle}/{z}/{x}/{y}.png?key=CX4LKDD5dwr4AqhWesL9iz9o5Yh7Z1Ci`, {
         attribution: '© TomTom',
         maxZoom: 22,
-        className: 'map-tiles',
       }).addTo(map);
 
       mapInstanceRef.current = map;
@@ -101,7 +103,7 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
         mapInstanceRef.current = null;
       }
     };
-  }, []);
+  }, [mapTheme]);
 
   // Update markers and route when locations change
   useEffect(() => {
@@ -158,12 +160,12 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
           const route = data.routes[0];
           const coordinates = route.geometry.coordinates.map((coord: [number, number]) => [coord[1], coord[0]]);
 
+          const routeColor = mapTheme === 'dark' ? '#CBD83B' : '#A88AED';
           const polyline = L.polyline(coordinates, {
-            color: '#CBD83B',
+            color: routeColor,
             weight: 6,
             opacity: 1,
             smoothFactor: 1,
-            className: 'route-line'
           }).addTo(map);
 
           polylineRef.current = polyline;
@@ -176,14 +178,14 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
         console.error('Error fetching OSRM route:', error);
         
         // Fallback: draw simple polyline
+        const routeColor = mapTheme === 'dark' ? '#CBD83B' : '#A88AED';
         const simplePolyline = L.polyline(
           locations.map(loc => [loc.lat, loc.lon]),
           {
-            color: '#CBD83B',
+            color: routeColor,
             weight: 6,
             opacity: 1,
             dashArray: '10, 10',
-            className: 'route-line'
           }
         ).addTo(map);
 
@@ -195,7 +197,7 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
     };
 
     fetchRoute();
-  }, [locations, onLocationClick]);
+  }, [locations, onLocationClick, mapTheme]);
 
   // Handle highlighted location
   useEffect(() => {
@@ -228,20 +230,21 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
           </div>
         </div>
       ) : (
-        <>
-          <style>{`
-            .map-tiles {
-              filter: grayscale(60%) brightness(1.1) contrast(0.7) saturate(0.4);
-            }
-            .route-line {
-              filter: drop-shadow(0 0 8px rgba(203, 216, 59, 0.8)) drop-shadow(0 0 16px rgba(203, 216, 59, 0.4));
-            }
-            .leaflet-container {
-              background: #f5f5f0 !important;
-            }
-          `}</style>
+        <div className="relative w-full h-full">
           <div ref={mapContainerRef} className="w-full h-full rounded-lg overflow-hidden" />
-        </>
+          <Button
+            variant="secondary"
+            size="icon"
+            onClick={() => setMapTheme(mapTheme === 'light' ? 'dark' : 'light')}
+            className="absolute top-4 right-4 z-[1000] rounded-full shadow-lg"
+          >
+            {mapTheme === 'light' ? (
+              <Moon className="h-4 w-4" />
+            ) : (
+              <Sun className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
       )}
     </>
   );
