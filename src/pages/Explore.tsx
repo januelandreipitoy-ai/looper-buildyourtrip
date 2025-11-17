@@ -23,20 +23,11 @@ const Explore = () => {
   const { addLocation } = useTrip();
 
   const categoryTags = [
-    { name: 'Aesthetic', image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=100&h=100&fit=crop', color: 'from-teal-100 to-green-100' },
-    { name: 'Outfit', image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=100&h=100&fit=crop', color: 'from-purple-100 to-pink-100' },
-    { name: 'Travel', image: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=100&h=100&fit=crop', color: 'from-blue-100 to-indigo-100' },
-    { name: 'Core', image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=100&h=100&fit=crop', color: 'from-slate-100 to-gray-100' },
-    { name: 'Wallpaper', image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=100&h=100&fit=crop', color: 'from-pink-100 to-rose-100' },
-    { name: 'Vibes', image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=100&h=100&fit=crop', color: 'from-amber-100 to-orange-100' },
-    { name: 'Nails', image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=100&h=100&fit=crop', color: 'from-teal-100 to-cyan-100' },
-    { name: 'Art', image: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=100&h=100&fit=crop', color: 'from-lime-100 to-green-100' },
-    { name: 'Fashion', image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=100&h=100&fit=crop', color: 'from-fuchsia-100 to-purple-100' },
-    { name: 'Tattoo', image: 'https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?w=100&h=100&fit=crop', color: 'from-indigo-100 to-blue-100' },
-    { name: 'Food', image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=100&h=100&fit=crop', color: 'from-red-100 to-orange-100' },
-    { name: 'Cars', image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=100&h=100&fit=crop', color: 'from-cyan-100 to-blue-100' },
-    { name: 'Kyoto', image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=100&h=100&fit=crop', color: 'from-rose-100 to-pink-100' },
-    { name: 'Street', image: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=100&h=100&fit=crop', color: 'from-yellow-100 to-orange-100' }
+    'Hidden Gems',
+    'Shopping & Local Life',
+    'Relaxation & Wellness',
+    'Activities & Attractions',
+    'Food & Drink'
   ];
 
   // Sample Japan destinations for masonry grid
@@ -175,33 +166,9 @@ const Explore = () => {
   return (
     <div className="min-h-screen bg-background flex">
       <div className="flex-1 overflow-auto">
-        {/* Header with Search */}
+        {/* Header with Category Filters */}
         <div className="sticky top-16 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm z-10">
-          <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-            {/* Trip Search Bar */}
-          <TripSearchBar />
-
-          {/* Quick Search Bar */}
-          <div className="w-full max-w-2xl mx-auto relative">
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              placeholder="Quick search a country, city, or experience..."
-              className="w-full pl-14 pr-6 py-3 rounded-full bg-muted border border-border focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground placeholder:text-muted-foreground"
-            />
-            {isSearching && (
-              <Loader2 className="absolute right-6 top-1/2 -translate-y-1/2 text-primary animate-spin" size={20} />
-            )}
-          </div>
-
-          {/* Discovery Prompt Section */}
-          <div 
-            className={`transition-all duration-300 ${
-              showDiscoveryPrompt ? 'opacity-100 max-h-96' : 'opacity-0 max-h-0 overflow-hidden'
-            }`}
-          >
+          <div className="max-w-7xl mx-auto px-4 py-6">
             <div className="text-center space-y-4">
               <div className="space-y-2">
                 <h2 className="text-2xl font-bold text-foreground">
@@ -212,32 +179,28 @@ const Explore = () => {
                 </p>
               </div>
 
-              {/* Category Tags - Pinterest Style */}
-              <div className="flex items-center justify-center">
-                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide max-w-5xl px-4">
-                  {categoryTags.map((tag) => (
-                    <button
-                      key={tag.name}
-                      onClick={() => handleTagClick(tag.name)}
-                      className={`flex-shrink-0 flex items-center gap-2 pl-1 pr-4 py-1 rounded-full bg-gradient-to-r ${tag.color} hover:shadow-lg text-sm font-semibold text-gray-800 whitespace-nowrap transition-all hover:scale-105 min-w-fit`}
-                    >
-                      <img 
-                        src={tag.image} 
-                        alt={tag.name}
-                        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                      />
-                      <span className="truncate max-w-[120px]">{tag.name}</span>
-                    </button>
-                  ))}
-                </div>
+              {/* Category Filter Buttons */}
+              <div className="flex items-center justify-center flex-wrap gap-3">
+                {categoryTags.map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => handleTagClick(tag)}
+                    className={`px-6 py-2 rounded-full font-medium transition-all ${
+                      selectedCategory === tag
+                        ? 'bg-primary text-primary-foreground shadow-lg'
+                        : 'bg-muted text-foreground hover:bg-muted/80'
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Masonry Grid */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Masonry Grid */}
+        <div className="max-w-7xl mx-auto px-4 py-6">
         {isSearching ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="animate-spin text-primary" size={48} />
