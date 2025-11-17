@@ -148,8 +148,8 @@ export default function NewHome() {
           const expandedIcon = L.divIcon({
             html: createClusterHTML(true),
             className: 'photo-cluster-marker',
-            iconSize: [100, 100],
-            iconAnchor: [50, 50],
+            iconSize: [120, 120],
+            iconAnchor: [60, 60],
           });
           marker.setIcon(expandedIcon);
         });
@@ -159,7 +159,6 @@ export default function NewHome() {
         });
 
         marker.on('click', () => {
-          // Handle cluster click - could navigate to detail view
           console.log('Clicked cluster:', cluster.name);
         });
 
@@ -185,18 +184,12 @@ export default function NewHome() {
         className="absolute inset-0 w-full h-full"
       />
 
-      {/* Hero Overlay */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center z-[1000] pointer-events-none animate-fade-in px-4">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 sm:mb-4 text-foreground drop-shadow-2xl">
-          Explore the World
-        </h1>
-        <p className="text-lg sm:text-xl md:text-2xl text-foreground/90 mb-6 sm:mb-8 drop-shadow-lg font-medium">
-          your trips all in one loop
-        </p>
+      {/* CTA Button at Bottom Center */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-[1000] animate-fade-in">
         <Button
           size="lg"
           onClick={() => navigate('/search')}
-          className="pointer-events-auto bg-gradient-to-r from-primary via-accent to-secondary hover:opacity-90 text-white border-0 shadow-2xl text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6"
+          className="bg-gradient-to-r from-primary via-accent to-secondary hover:opacity-90 text-white border-0 shadow-2xl text-base sm:text-lg px-8 sm:px-10 py-4 sm:py-6"
         >
           <Compass className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
           Start Looping
@@ -218,8 +211,8 @@ export default function NewHome() {
         }
 
         .photo-cluster.expanded {
-          width: 100px;
-          height: 100px;
+          width: 120px;
+          height: 120px;
         }
 
         .cluster-photo {
@@ -230,14 +223,14 @@ export default function NewHome() {
           background-size: cover;
           background-position: center;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
           border: 3px solid white;
         }
 
         .photo-cluster.expanded .cluster-photo {
-          width: 70px;
-          height: 70px;
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+          width: 80px;
+          height: 80px;
+          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
         }
 
         /* Mobile touch states */
