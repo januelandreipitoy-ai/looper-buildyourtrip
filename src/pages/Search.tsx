@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Lottie from 'lottie-react';
-import { useTrip } from '@/contexts/TripContext';
 import animationData from '@/assets/looper-animation.json';
 import { TripSearchBar } from '@/components/TripSearchBar';
 
@@ -42,24 +40,8 @@ const DESTINATIONS = [
 ];
 
 export default function Search() {
-  const navigate = useNavigate();
-  const { setSearchParams } = useTrip();
   const [isSearching, setIsSearching] = useState(false);
 
-  const handleTagClick = (category: string) => {
-    setIsSearching(true);
-    setSearchParams({ 
-      destination: category, 
-      days: 7,
-      adults: 2, 
-      children: 0, 
-      infants: 0, 
-      pets: 0 
-    });
-    setTimeout(() => {
-      navigate('/explore', { state: { searchQuery: category } });
-    }, 800);
-  };
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
@@ -123,22 +105,6 @@ export default function Search() {
           <TripSearchBar />
         </div>
 
-        {/* Category Tags */}
-        <div 
-          className={`flex flex-wrap justify-center gap-3 max-w-3xl transition-all duration-700 ${
-            isSearching ? 'opacity-0 scale-95 translate-y-20' : 'opacity-100 scale-100'
-          }`}
-        >
-          {['Hidden Gems', 'Shopping & Local Life', 'Relaxation & Wellness', 'Activities & Attractions', 'Food & Drink'].map((category) => (
-            <button
-              key={category}
-              onClick={() => handleTagClick(category)}
-              className="px-6 py-2 bg-white/90 hover:bg-white text-foreground rounded-full font-medium transition-all shadow-md hover:shadow-lg"
-            >
-              {category}
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* Loading Overlay */}
