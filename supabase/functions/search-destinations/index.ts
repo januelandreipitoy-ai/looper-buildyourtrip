@@ -22,7 +22,7 @@ serve(async (req) => {
     }
 
     const SERPER_API_KEY = Deno.env.get('SERPER_API_KEY');
-    const UNSPLASH_ACCESS_KEY = Deno.env.get('UNSPLASH_ACCESS_KEY');
+    const PEXELS_API_KEY = Deno.env.get('PEXELS_API_KEY');
     
     if (!SERPER_API_KEY) {
       console.error('SERPER_API_KEY not configured');
@@ -32,8 +32,8 @@ serve(async (req) => {
       );
     }
 
-    if (!UNSPLASH_ACCESS_KEY) {
-      console.error('UNSPLASH_ACCESS_KEY not configured');
+    if (!PEXELS_API_KEY) {
+      console.error('PEXELS_API_KEY not configured');
       return new Response(
         JSON.stringify({ error: 'Image service not configured' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -67,49 +67,49 @@ serve(async (req) => {
     const data = await response.json();
     console.log('Serper places count:', data.places?.length || 0);
 
-    // Fetch images from Unsplash for each destination with more specific queries
+    // Fetch images from Pexels for each destination with more specific queries
     const fetchImageForDestination = async (destinationName: string, city: string) => {
       try {
         // Create a more specific search query combining destination name and city
         const specificQuery = `${destinationName} ${city}`;
         
-        const unsplashResponse = await fetch(
-          `https://api.unsplash.com/search/photos?query=${encodeURIComponent(specificQuery)}&per_page=1&orientation=landscape`,
+        const pexelsResponse = await fetch(
+          `https://api.pexels.com/v1/search?query=${encodeURIComponent(specificQuery)}&per_page=1&orientation=landscape`,
           {
             headers: {
-              'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`,
+              'Authorization': PEXELS_API_KEY,
             },
           }
         );
         
-        if (unsplashResponse.ok) {
-          const unsplashData = await unsplashResponse.json();
-          if (unsplashData.results && unsplashData.results.length > 0) {
-            return unsplashData.results[0].urls.regular;
+        if (pexelsResponse.ok) {
+          const pexelsData = await pexelsResponse.json();
+          if (pexelsData.photos && pexelsData.photos.length > 0) {
+            return pexelsData.photos[0].src.large;
           }
         }
         
         // Fallback: try with just the city
         const fallbackResponse = await fetch(
-          `https://api.unsplash.com/search/photos?query=${encodeURIComponent(city + ' landmark')}&per_page=1&orientation=landscape`,
+          `https://api.pexels.com/v1/search?query=${encodeURIComponent(city + ' landmark')}&per_page=1&orientation=landscape`,
           {
             headers: {
-              'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`,
+              'Authorization': PEXELS_API_KEY,
             },
           }
         );
         
         if (fallbackResponse.ok) {
           const fallbackData = await fallbackResponse.json();
-          if (fallbackData.results && fallbackData.results.length > 0) {
-            return fallbackData.results[0].urls.regular;
+          if (fallbackData.photos && fallbackData.photos.length > 0) {
+            return fallbackData.photos[0].src.large;
           }
         }
       } catch (error) {
-        console.error('Error fetching Unsplash image:', error);
+        console.error('Error fetching Pexels image:', error);
       }
-      // Final fallback with a more generic travel/landmark image
-      return `https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80`;
+      // Final fallback with a generic travel/landmark image from Pexels
+      return `https://images.pexels.com/photos/1128678/pexels-photo-1128678.jpeg?auto=compress&cs=tinysrgb&w=800`;
     };
 
     // Function to geocode using Photon API if coordinates are missing
