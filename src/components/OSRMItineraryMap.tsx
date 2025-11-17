@@ -227,6 +227,16 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
     window.open(url, '_blank');
   };
 
+  const handleOpenInWaze = () => {
+    if (locations.length === 0) return;
+    
+    // Waze doesn't support multi-stop via URL, so navigate to first location
+    // User can then add subsequent stops manually in Waze
+    const firstLocation = locations[0];
+    const url = `https://waze.com/ul?ll=${firstLocation.lat},${firstLocation.lon}&navigate=yes`;
+    window.open(url, '_blank');
+  };
+
   return (
     <>
       {locations.length === 0 ? (
@@ -253,12 +263,20 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
               <Sun className="h-4 w-4" />
             )}
           </Button>
-          <Button
-            onClick={handleOpenInGoogleMaps}
-            className="absolute bottom-4 right-4 z-[1000] rounded-lg shadow-lg bg-background/95 hover:bg-background text-foreground border border-border"
-          >
-            Open in Google Maps
-          </Button>
+          <div className="absolute bottom-4 right-4 z-[1000] flex gap-2">
+            <Button
+              onClick={handleOpenInWaze}
+              className="rounded-lg shadow-lg bg-background/95 hover:bg-background text-foreground border border-border"
+            >
+              Open in Waze
+            </Button>
+            <Button
+              onClick={handleOpenInGoogleMaps}
+              className="rounded-lg shadow-lg bg-background/95 hover:bg-background text-foreground border border-border"
+            >
+              Open in Google Maps
+            </Button>
+          </div>
         </div>
       )}
     </>
