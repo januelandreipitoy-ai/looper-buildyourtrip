@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Heart, MapPin, Search, Loader2 } from 'lucide-react';
+import { Heart, MapPin, Loader2 } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import { useTrip, SavedLocation } from '@/contexts/TripContext';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { TripSearchBar } from '@/components/TripSearchBar';
 import { TripSuggestionsSidebar } from '@/components/TripSuggestionsSidebar';
 
 interface Destination {
@@ -15,12 +15,14 @@ interface Destination {
 }
 
 const Explore = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showDiscoveryPrompt, setShowDiscoveryPrompt] = useState(true);
+  const location = useLocation();
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<Destination[]>([]);
   const { addLocation } = useTrip();
+
+  // Get search query from navigation state
+  const searchQuery = (location.state as any)?.searchQuery || '';
 
   const categoryTags = [
     'Hidden Gems',
@@ -67,12 +69,10 @@ const Explore = () => {
   const performSearch = async (query: string) => {
     if (!query.trim()) {
       setSearchResults([]);
-      setShowDiscoveryPrompt(true);
       return;
     }
 
     setIsSearching(true);
-    setShowDiscoveryPrompt(false);
 
     try {
       const { data, error } = await supabase.functions.invoke('search-destinations', {
@@ -96,25 +96,16 @@ const Explore = () => {
     }
   };
 
+  // Perform search when component mounts with query from navigation
   useEffect(() => {
-    const debounceTimer = setTimeout(() => {
-      if (searchQuery) {
-        performSearch(searchQuery);
-      }
-    }, 500);
-
-    return () => clearTimeout(debounceTimer);
+    if (searchQuery) {
+      performSearch(searchQuery);
+    }
   }, [searchQuery]);
-
-  const handleSearchChange = (value: string) => {
-    setSearchQuery(value);
-    setShowDiscoveryPrompt(value.trim() === '');
-  };
 
   const handleTagClick = (tag: string) => {
     setSelectedCategory(tag);
-    setSearchQuery(tag);
-    setShowDiscoveryPrompt(false);
+    performSearch(tag);
   };
 
   const handleSaveLocation = async (destination: any) => {
@@ -161,7 +152,7 @@ const Explore = () => {
     toast.success(`${destination.name} added to your trip!`);
   };
 
-  const displayedDestinations = searchQuery ? searchResults : defaultDestinations;
+  const displayedDestinations = searchResults.length > 0 ? searchResults : defaultDestinations;
 
   return (
     <div className="min-h-screen bg-background flex">

@@ -1,9 +1,9 @@
-import { useState, KeyboardEvent } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Lottie from 'lottie-react';
-import { Search as SearchIcon } from 'lucide-react';
 import { useTrip } from '@/contexts/TripContext';
 import animationData from '@/assets/looper-animation.json';
+import { TripSearchBar } from '@/components/TripSearchBar';
 
 // Famous destinations for the animated background columns
 const DESTINATIONS = [
@@ -44,36 +44,21 @@ const DESTINATIONS = [
 export default function Search() {
   const navigate = useNavigate();
   const { setSearchParams } = useTrip();
-  const [destination, setDestination] = useState('');
   const [isSearching, setIsSearching] = useState(false);
 
-  const handleSearch = () => {
-    if (!destination.trim()) return;
-    
+  const handleTagClick = (category: string) => {
     setIsSearching(true);
     setSearchParams({ 
-      destination: destination.trim(), 
+      destination: category, 
       days: 7,
       adults: 2, 
       children: 0, 
       infants: 0, 
       pets: 0 
     });
-    
     setTimeout(() => {
-      navigate('/explore', { state: { searchDestination: destination.trim() } });
+      navigate('/explore', { state: { searchQuery: category } });
     }, 800);
-  };
-
-  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
-  const handleTagClick = (category: string) => {
-    setDestination(category);
-    handleSearch();
   };
 
   return (
@@ -128,31 +113,19 @@ export default function Search() {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 h-full flex flex-col items-center justify-center px-4 space-y-6">
-        {/* Search Bar - White Design */}
+      <div className="relative z-10 h-full flex flex-col items-center justify-center px-4 space-y-8">
+        {/* Where/When/Who Search Bar */}
         <div 
-          className={`w-full max-w-4xl px-4 transition-all duration-700 ${
+          className={`w-full transition-all duration-700 ${
             isSearching ? 'opacity-0 scale-95 translate-y-20' : 'opacity-100 scale-100'
           }`}
         >
-          <div className="relative">
-            <div className="flex items-center bg-white dark:bg-white rounded-full shadow-2xl px-6 py-4 focus-within:shadow-2xl focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-              <SearchIcon className="w-5 h-5 text-muted-foreground mr-3 flex-shrink-0" />
-              <input
-                type="text"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Quick search a country, city, or experience..."
-                className="flex-1 bg-transparent text-base text-foreground dark:text-[#2d1b3d] placeholder:text-muted-foreground dark:placeholder:text-[#7a6b8a] focus:outline-none"
-              />
-            </div>
-          </div>
+          <TripSearchBar />
         </div>
 
         {/* Category Tags */}
         <div 
-          className={`flex flex-wrap justify-center gap-3 transition-all duration-700 ${
+          className={`flex flex-wrap justify-center gap-3 max-w-3xl transition-all duration-700 ${
             isSearching ? 'opacity-0 scale-95 translate-y-20' : 'opacity-100 scale-100'
           }`}
         >
@@ -160,7 +133,7 @@ export default function Search() {
             <button
               key={category}
               onClick={() => handleTagClick(category)}
-              className="px-4 py-2 rounded-full bg-white/90 backdrop-blur-sm text-foreground dark:text-[#2d1b3d] font-medium hover:bg-white hover:shadow-lg transition-all"
+              className="px-6 py-2 bg-white/90 hover:bg-white text-foreground rounded-full font-medium transition-all shadow-md hover:shadow-lg"
             >
               {category}
             </button>
@@ -174,7 +147,7 @@ export default function Search() {
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
             <p className="text-xl font-medium text-foreground">
-              Discovering {destination}...
+              Finding amazing places...
             </p>
           </div>
         </div>
