@@ -185,7 +185,7 @@ export default function NewHome() {
       />
 
       {/* CTA Button at Bottom Center */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-[1000] animate-fade-in">
+      <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-[1000] animate-fade-in">
         <Button
           size="lg"
           onClick={() => navigate('/search')}
