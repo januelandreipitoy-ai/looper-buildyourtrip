@@ -19,6 +19,7 @@ const Explore = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<Destination[]>([]);
+  const [searchInput, setSearchInput] = useState<string>('');
   const { addLocation } = useTrip();
 
   // Get search query from navigation state
@@ -168,6 +169,34 @@ const Explore = () => {
                 <p className="text-sm text-muted-foreground/80">
                   Discover places, experiences, and hidden gems waiting for you
                 </p>
+              </div>
+
+              {/* Search Bar */}
+              <div className="max-w-2xl mx-auto">
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (searchInput.trim()) {
+                      performSearch(searchInput);
+                    }
+                  }}
+                  className="relative"
+                >
+                  <input
+                    type="text"
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    placeholder="Search destinations..."
+                    className="w-full px-6 py-3 rounded-full border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!searchInput.trim()}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2 bg-primary text-primary-foreground rounded-full font-medium hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Search
+                  </button>
+                </form>
               </div>
 
               {/* Category Filter Buttons */}
