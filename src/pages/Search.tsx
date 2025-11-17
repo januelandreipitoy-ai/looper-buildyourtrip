@@ -71,14 +71,19 @@ export default function Search() {
     }
   };
 
+  const handleTagClick = (category: string) => {
+    setDestination(category);
+    handleSearch();
+  };
+
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
       {/* Animated Background Columns */}
-      <div className="absolute inset-0 flex gap-4 justify-center opacity-15 px-4">
+      <div className="absolute inset-0 flex gap-8 justify-center opacity-15 px-4">
         {DESTINATIONS.map((column, colIndex) => (
           <div
             key={colIndex}
-            className="flex flex-col gap-4 flex-1 max-w-[400px]"
+            className="flex flex-col gap-8 flex-1 max-w-[400px]"
             style={{
               animation: colIndex % 2 === 0 
                 ? 'scrollUp 60s linear infinite' 
@@ -123,7 +128,7 @@ export default function Search() {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 h-full flex flex-col items-center justify-center px-4">
+      <div className="relative z-10 h-full flex flex-col items-center justify-center px-4 space-y-6">
         {/* Search Bar - White Design */}
         <div 
           className={`w-full max-w-4xl px-4 transition-all duration-700 ${
@@ -143,6 +148,23 @@ export default function Search() {
               />
             </div>
           </div>
+        </div>
+
+        {/* Category Tags */}
+        <div 
+          className={`flex flex-wrap justify-center gap-3 transition-all duration-700 ${
+            isSearching ? 'opacity-0 scale-95 translate-y-20' : 'opacity-100 scale-100'
+          }`}
+        >
+          {['Hidden Gems', 'Shopping & Local Life', 'Relaxation & Wellness', 'Activities & Attractions', 'Food & Drink'].map((category) => (
+            <button
+              key={category}
+              onClick={() => handleTagClick(category)}
+              className="px-4 py-2 rounded-full bg-white/90 backdrop-blur-sm text-foreground dark:text-[#2d1b3d] font-medium hover:bg-white hover:shadow-lg transition-all"
+            >
+              {category}
+            </button>
+          ))}
         </div>
       </div>
 

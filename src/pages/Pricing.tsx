@@ -1,0 +1,122 @@
+import { Check } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+const Pricing = () => {
+  const tiers = [
+    {
+      name: 'Free',
+      price: 'Free',
+      description: 'Perfect for trying out Looper',
+      features: [
+        'Single-city trip',
+        'Basic recommendations',
+        'Basic routing',
+        'Limited destinations'
+      ],
+      cta: 'Get Started',
+      highlighted: false
+    },
+    {
+      name: 'Plus',
+      price: '$9.99',
+      priceNote: 'one-time',
+      description: 'Ideal for travelers planning their next adventure',
+      features: [
+        'Multi-day trips',
+        'Multi-city trips',
+        'Multi-country itineraries',
+        'AI-optimized time & order',
+        'Accurate OSRM routes',
+        'PDF export',
+        'Offline itinerary + routing'
+      ],
+      cta: 'Upgrade to Plus',
+      highlighted: true
+    },
+    {
+      name: 'Ultra',
+      price: '$29.99',
+      priceNote: 'one-time or annual',
+      description: 'For frequent travelers who want the best',
+      features: [
+        'Everything in Plus',
+        'Unlimited multi-country planning',
+        'AI concierge',
+        'Weather & crowd smart reordering',
+        'Priority image data',
+        'Early feature access'
+      ],
+      cta: 'Upgrade to Ultra',
+      highlighted: false
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-background py-20">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-foreground">
+            Choose Your Plan
+          </h1>
+          <p className="text-lg text-muted-foreground">
+            Select the perfect plan for your travel needs
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {tiers.map((tier) => (
+            <div
+              key={tier.name}
+              className={`rounded-2xl p-8 ${
+                tier.highlighted
+                  ? 'bg-gradient-to-br from-primary/10 to-accent/10 border-2 border-primary shadow-2xl scale-105'
+                  : 'bg-card border border-border'
+              }`}
+            >
+              {tier.highlighted && (
+                <div className="text-center mb-4">
+                  <span className="inline-block bg-primary text-white px-4 py-1 rounded-full text-sm font-medium">
+                    Most Popular
+                  </span>
+                </div>
+              )}
+              
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold mb-2 text-foreground">{tier.name}</h3>
+                <div className="mb-2">
+                  <span className="text-4xl font-bold text-foreground">{tier.price}</span>
+                  {tier.priceNote && (
+                    <span className="text-sm text-muted-foreground ml-2">{tier.priceNote}</span>
+                  )}
+                </div>
+                <p className="text-muted-foreground text-sm">{tier.description}</p>
+              </div>
+
+              <ul className="space-y-3 mb-8">
+                {tier.features.map((feature) => (
+                  <li key={feature} className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground text-sm">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <Button
+                className={`w-full ${
+                  tier.highlighted
+                    ? 'bg-primary hover:bg-primary/90 text-white'
+                    : 'bg-muted hover:bg-muted/80 text-foreground'
+                }`}
+                size="lg"
+              >
+                {tier.cta}
+              </Button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Pricing;

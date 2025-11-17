@@ -14,6 +14,7 @@ import Explore from "./pages/Explore";
 import Saved from "./pages/Saved";
 import Map from "./pages/Map";
 import ItineraryView from "./pages/ItineraryView";
+import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
                 <Route path="/saved" element={<Saved />} />
                 <Route path="/map" element={<Map />} />
                 <Route path="/itinerary" element={<ItineraryView />} />
+                <Route path="/pricing" element={<Pricing />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
