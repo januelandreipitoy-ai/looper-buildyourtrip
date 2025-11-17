@@ -74,11 +74,11 @@ export default function Search() {
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
       {/* Animated Background Columns */}
-      <div className="absolute inset-0 flex gap-8 justify-center opacity-20 px-8">
+      <div className="absolute inset-0 flex gap-4 justify-center opacity-15 px-4">
         {DESTINATIONS.map((column, colIndex) => (
           <div
             key={colIndex}
-            className="flex flex-col gap-8 flex-1 max-w-[400px]"
+            className="flex flex-col gap-4 flex-1 max-w-[400px]"
             style={{
               animation: colIndex % 2 === 0 
                 ? 'scrollUp 60s linear infinite' 
@@ -103,37 +103,34 @@ export default function Search() {
         ))}
       </div>
 
-      {/* Main Content */}
-      <div className="relative z-10 h-full flex flex-col items-center justify-center px-4 gap-8">
-        {/* Lottie Animation - Centered and Scaled */}
-        <div 
-          className={`w-full max-w-2xl transition-all duration-700 ${
-            isSearching ? 'opacity-0 scale-95 -translate-y-20' : 'opacity-100 scale-100'
-          }`}
-        >
-          <Lottie 
-            animationData={animationData}
-            loop={true}
-            className="w-full h-auto"
-          />
-        </div>
+      {/* Lottie Animation - Full Screen Background */}
+      <div className="absolute inset-0 z-0 flex items-center justify-center">
+        <Lottie 
+          animationData={animationData}
+          loop={true}
+          className="w-full h-full"
+          style={{ minWidth: '100%', minHeight: '100%', objectFit: 'cover' }}
+        />
+      </div>
 
-        {/* Search Bar - Warm Cream/Yellow Design */}
+      {/* Main Content */}
+      <div className="relative z-10 h-full flex flex-col items-center justify-center px-4">
+        {/* Search Bar - White Design */}
         <div 
           className={`w-full max-w-4xl px-4 transition-all duration-700 ${
             isSearching ? 'opacity-0 scale-95 translate-y-20' : 'opacity-100 scale-100'
           }`}
         >
           <div className="relative">
-            <div className="flex items-center bg-[#FCEEB5] dark:bg-[#E8D89F] rounded-full shadow-lg px-6 py-4 focus-within:shadow-xl transition-all">
-              <SearchIcon className="w-5 h-5 text-amber-700/70 mr-3 flex-shrink-0" />
+            <div className="flex items-center bg-white dark:bg-white rounded-full shadow-2xl px-6 py-4 focus-within:shadow-2xl focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+              <SearchIcon className="w-5 h-5 text-muted-foreground mr-3 flex-shrink-0" />
               <input
                 type="text"
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Quick search a country, city, or experience..."
-                className="flex-1 bg-transparent text-base text-amber-900 placeholder:text-amber-700/60 focus:outline-none"
+                className="flex-1 bg-transparent text-base text-foreground dark:text-[#2d1b3d] placeholder:text-muted-foreground dark:placeholder:text-[#7a6b8a] focus:outline-none"
               />
             </div>
           </div>
