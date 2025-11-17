@@ -112,72 +112,94 @@ const ItineraryView = () => {
     color: string; 
     timeLabel: string; 
     meal?: string;
-  }) => (
-    <div 
-      className={`border-l-4 border-${color}-500/30 pl-6 cursor-pointer hover:bg-muted/50 rounded-r-lg p-4 transition-all`}
-      onClick={() => setHighlightedLocation(slot.location)}
-      onMouseEnter={() => setHighlightedLocation(slot.location)}
-    >
-      <div className="flex items-center gap-2 mb-3">
-        <div className={`w-2 h-2 rounded-full bg-${color}-500`}></div>
-        <h3 className="text-lg font-semibold">{timeLabel}</h3>
-        <Badge variant="outline" className="text-xs">{slot.time}</Badge>
-      </div>
-      {slot.travelTime && (
-        <div className="mb-3 text-sm text-muted-foreground flex items-center gap-2">
-          <Badge variant="secondary" className="text-xs">
-            {slot.transportMode}: {slot.travelTime}
-          </Badge>
+  }) => {
+    // Safety check: ensure slot and location exist
+    if (!slot || !slot.location) {
+      return (
+        <div className={`border-l-4 border-${color}-500/30 pl-6 p-4 rounded-r-lg bg-muted/30`}>
+          <div className="flex items-center gap-2 mb-3">
+            <div className={`w-2 h-2 rounded-full bg-${color}-500`}></div>
+            <h3 className="text-lg font-semibold">{timeLabel}</h3>
+            {slot?.time && <Badge variant="outline" className="text-xs">{slot.time}</Badge>}
+          </div>
+          <p className="text-sm text-muted-foreground italic">Location details unavailable</p>
         </div>
-      )}
-      <div className="flex gap-4 mb-4">
-        <img 
-          src={slot.location.image} 
-          alt={slot.location.name}
-          className="w-40 h-40 rounded-lg object-cover shadow-lg"
-        />
-        <div className="flex-1">
-          <h4 className="text-xl font-semibold mb-1">{slot.location.name}</h4>
-          <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2">
-            <MapPin className="h-3 w-3" />
-            {slot.location.city}, {slot.location.country}
-          </p>
-          <p className="text-sm mb-2 line-clamp-2">{slot.location.description}</p>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              {slot.duration}
-            </span>
+      );
+    }
+
+    return (
+      <div 
+        className={`border-l-4 border-${color}-500/30 pl-6 cursor-pointer hover:bg-muted/50 rounded-r-lg p-4 transition-all`}
+        onClick={() => setHighlightedLocation(slot.location)}
+        onMouseEnter={() => setHighlightedLocation(slot.location)}
+      >
+        <div className="flex items-center gap-2 mb-3">
+          <div className={`w-2 h-2 rounded-full bg-${color}-500`}></div>
+          <h3 className="text-lg font-semibold">{timeLabel}</h3>
+          <Badge variant="outline" className="text-xs">{slot.time || 'TBD'}</Badge>
+        </div>
+        {slot.travelTime && (
+          <div className="mb-3 text-sm text-muted-foreground flex items-center gap-2">
+            <Badge variant="secondary" className="text-xs">
+              {slot.transportMode || 'Travel'}: {slot.travelTime}
+            </Badge>
+          </div>
+        )}
+        <div className="flex gap-4 mb-4">
+          {slot.location.image && (
+            <img 
+              src={slot.location.image} 
+              alt={slot.location.name || 'Location'}
+              className="w-40 h-40 rounded-lg object-cover shadow-lg"
+            />
+          )}
+          <div className="flex-1">
+            <h4 className="text-xl font-semibold mb-1">{slot.location.name || 'Unnamed Location'}</h4>
+            <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2">
+              <MapPin className="h-3 w-3" />
+              {slot.location.city || 'Unknown'}, {slot.location.country || 'Unknown'}
+            </p>
+            {slot.location.description && (
+              <p className="text-sm mb-2 line-clamp-2">{slot.location.description}</p>
+            )}
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                {slot.duration || 'Duration TBD'}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-      <div>
-        <h5 className="text-sm font-semibold mb-2 flex items-center gap-2">
-          <Camera className="h-4 w-4" />
-          Activities
-        </h5>
-        <ul className="space-y-1">
-          {slot.activities.map((activity: string, i: number) => (
-            <li key={i} className={`text-sm text-muted-foreground flex items-center gap-2`}>
-              <span className={`w-1.5 h-1.5 rounded-full bg-${color}-500`}></span>
-              {activity}
-            </li>
-          ))}
-        </ul>
-        {slot.notes && (
-          <p className="text-sm text-muted-foreground mt-3 italic">{slot.notes}</p>
+        {slot.activities && slot.activities.length > 0 && (
+          <div>
+            <h5 className="text-sm font-semibold mb-2 flex items-center gap-2">
+              <Camera className="h-4 w-4" />
+              Activities
+            </h5>
+            <ul className="space-y-1">
+              {slot.activities.map((activity: string, i: number) => (
+                <li key={i} className={`text-sm text-muted-foreground flex items-center gap-2`}>
+                  <span className={`w-1.5 h-1.5 rounded-full bg-${color}-500`}></span>
+                  {activity}
+                </li>
+              ))}
+            </ul>
+            {slot.notes && (
+              <p className="text-sm text-muted-foreground mt-3 italic">{slot.notes}</p>
+            )}
+          </div>
+        )}
+        {meal && (
+          <div className="mt-3 p-3 bg-muted/50 rounded-lg">
+            <p className="text-sm font-medium flex items-center gap-2">
+              <Utensils className="h-4 w-4" />
+              {meal}
+            </p>
+          </div>
         )}
       </div>
-      {meal && (
-        <div className="mt-3 p-3 bg-muted/50 rounded-lg">
-          <p className="text-sm font-medium flex items-center gap-2">
-            <Utensils className="h-4 w-4" />
-            {meal}
-          </p>
-        </div>
-      )}
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen pt-16">
