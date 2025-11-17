@@ -103,7 +103,7 @@ export const TripSearchBar = ({ className }: TripSearchBarProps) => {
       }
       
       // Navigate to explore page to see results
-      navigate('/explore');
+      navigate('/explore', { state: { searchQuery: destination } });
     } catch (error) {
       console.error('Search error:', error);
       toast.error('Failed to generate trip suggestions. Please try again.');
