@@ -79,9 +79,9 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
         scrollWheelZoom: true,
       });
 
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        maxZoom: 19,
+      L.tileLayer('https://api.tomtom.com/map/1/tile/basic/main/{z}/{x}/{y}.png?key=CX4LKDD5dwr4AqhWesL9iz9o5Yh7Z1Ci', {
+        attribution: '© TomTom',
+        maxZoom: 22,
         className: 'map-tiles',
       }).addTo(map);
 
