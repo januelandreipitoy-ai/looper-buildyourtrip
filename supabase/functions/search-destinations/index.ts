@@ -51,7 +51,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         q: `tourist attractions in ${query}`,
-        limit: 10,
+        limit: 20,
       }),
     });
 
@@ -137,7 +137,7 @@ serve(async (req) => {
     };
 
     // Transform Serper places into destination format with coordinates
-    const places = (data.places || []).slice(0, 12);
+    const places = (data.places || []).slice(0, 20);
     const destinationsWithImages = await Promise.all(
       places.map(async (place: any, index: number) => {
         const cityName = place.city || query;
