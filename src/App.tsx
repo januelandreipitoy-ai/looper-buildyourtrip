@@ -8,7 +8,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Navigation from "@/components/Navigation";
 import GlobalChatbot from "@/components/GlobalChatbot";
-import Home from "./pages/Home";
+import NewHome from "./pages/NewHome";
 import Search from "./pages/Search";
 import Explore from "./pages/Explore";
 import Saved from "./pages/Saved";
@@ -31,7 +31,7 @@ const App = () => (
             <GlobalChatbot />
             <div className="pt-16">
               <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<NewHome />} />
                 <Route path="/search" element={<Search />} />
                 <Route path="/explore" element={<Explore />} />
                 <Route path="/saved" element={<Saved />} />

@@ -104,12 +104,21 @@ export default function Search() {
       </div>
 
       {/* Lottie Animation - Full Screen Background */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center">
+      <div className="absolute inset-0 z-0">
         <Lottie 
           animationData={animationData}
           loop={true}
           className="w-full h-full"
-          style={{ minWidth: '100%', minHeight: '100%', objectFit: 'cover' }}
+          style={{ 
+            width: '100vw', 
+            height: '100vh',
+            minWidth: '100%', 
+            minHeight: '100%',
+            objectFit: 'cover',
+            position: 'absolute',
+            top: 0,
+            left: 0
+          }}
         />
       </div>
 
