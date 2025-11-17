@@ -1,0 +1,16 @@
+project_id = "rqclcdrcpmxoxupozlzc"
+
+[functions.search-destinations]
+verify_jwt = false
+
+[functions.generate-trip-suggestions]
+verify_jwt = false
+
+[functions.generate-ai-itinerary]
+verify_jwt = false
+
+[functions.loopi-chat]
+verify_jwt = false
+
+[functions.travel-chat]
+verify_jwt = false
