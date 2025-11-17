@@ -224,23 +224,16 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
     }
   }, [highlightedLocation, locations]);
 
-  const handleOpenInGoogleMaps = () => {
-    if (locations.length === 0) return;
-    
-    // Build multi-stop Google Maps navigation URL with all locations in order
+  const getGoogleMapsUrl = () => {
+    if (locations.length === 0) return '';
     const waypoints = locations.map(loc => `${loc.lat},${loc.lon}`).join('/');
-    const url = `https://www.google.com/maps/dir/${waypoints}`;
-    window.open(url, '_blank');
+    return `https://www.google.com/maps/dir/${waypoints}`;
   };
 
-  const handleOpenInWaze = () => {
-    if (locations.length === 0) return;
-    
-    // Waze doesn't support multi-stop via URL, so navigate to first location
-    // User can then add subsequent stops manually in Waze
+  const getWazeUrl = () => {
+    if (locations.length === 0) return '';
     const firstLocation = locations[0];
-    const url = `https://waze.com/ul?ll=${firstLocation.lat},${firstLocation.lon}&navigate=yes`;
-    window.open(url, '_blank');
+    return `https://waze.com/ul?ll=${firstLocation.lat},${firstLocation.lon}&navigate=yes`;
   };
 
   return (
@@ -277,11 +270,25 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-background border border-border shadow-lg z-[1001]">
-              <DropdownMenuItem onClick={handleOpenInGoogleMaps} className="cursor-pointer">
-                Google Maps
+              <DropdownMenuItem asChild>
+                <a 
+                  href={getGoogleMapsUrl()} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="cursor-pointer w-full"
+                >
+                  Google Maps
+                </a>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleOpenInWaze} className="cursor-pointer">
-                Waze
+              <DropdownMenuItem asChild>
+                <a 
+                  href={getWazeUrl()} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="cursor-pointer w-full"
+                >
+                  Waze
+                </a>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
