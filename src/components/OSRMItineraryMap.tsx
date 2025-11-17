@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { MapPin } from 'lucide-react';
 import type { DayItinerary, TimeSlot } from '@/contexts/TripContext';
 
 interface OSRMItineraryMapProps {
@@ -26,23 +27,28 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
   const markersRef = useRef<any[]>([]);
   const polylineRef = useRef<any>(null);
 
-  // Extract all locations from the day's time slots
+  // Extract all locations from the day's time slots with proper coordinate mapping
   const locations: Location[] = [
     day.timeSlots.morning,
     day.timeSlots.afternoon,
     day.timeSlots.evening
   ]
-    .filter((slot): slot is TimeSlot => slot !== undefined && slot.location !== undefined)
+    .filter((slot): slot is TimeSlot => 
+      slot !== undefined && 
+      slot.location !== undefined &&
+      typeof slot.location.lat === 'number' &&
+      typeof slot.location.lng === 'number' &&
+      !isNaN(slot.location.lat) &&
+      !isNaN(slot.location.lng) &&
+      slot.location.lat !== 0 &&
+      slot.location.lng !== 0
+    )
     .map(slot => ({
       lat: slot.location.lat,
       lon: slot.location.lng,
       name: slot.location.name,
       image: slot.location.image
-    }))
-    .filter(loc => 
-      typeof loc.lat === 'number' && 
-      typeof loc.lon === 'number'
-    );
+    }));
 
   useEffect(() => {
     if (!mapContainerRef.current || locations.length === 0) return;
@@ -208,7 +214,20 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
   }, [highlightedLocation, locations]);
 
   return (
-    <div ref={mapContainerRef} className="w-full h-full rounded-lg overflow-hidden" />
+    <>
+      {locations.length === 0 ? (
+        <div className="w-full h-full flex items-center justify-center bg-muted rounded-lg">
+          <div className="text-center p-8">
+            <MapPin className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+            <p className="text-muted-foreground">
+              No valid location coordinates available for this day.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div ref={mapContainerRef} className="w-full h-full rounded-lg overflow-hidden" />
+      )}
+    </>
   );
 };
 

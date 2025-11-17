@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Compass, Map, Heart, Calendar } from 'lucide-react';
+import { Compass, Heart, Calendar, DollarSign } from 'lucide-react';
 import Logo from './Logo';
 import { useTrip } from '@/contexts/TripContext';
 
@@ -11,6 +11,7 @@ const Navigation = () => {
     { path: '/explore', label: 'Explore', icon: Compass },
     { path: '/saved', label: 'Saved', icon: Heart, count: savedLocations.length },
     { path: '/itinerary', label: 'Itinerary', icon: Calendar },
+    { path: '/pricing', label: 'Pricing', icon: DollarSign },
   ];
 
   return (

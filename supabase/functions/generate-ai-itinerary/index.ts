@@ -28,7 +28,11 @@ serve(async (req) => {
 
     // Create prompt for AI
     const locationsText = locations.map((loc: any, idx: number) => 
-      `${idx + 1}. ${loc.name} (${loc.type}) - ${loc.city}, ${loc.country}\n   Description: ${loc.description}\n   Tags: ${loc.tags.join(', ')}`
+      `${idx + 1}. ${loc.name} (${loc.type}) - ${loc.city}, ${loc.country}
+   Description: ${loc.description}
+   Tags: ${loc.tags.join(', ')}
+   Coordinates: lat ${loc.lat}, lng ${loc.lng}
+   Image: ${loc.image || 'N/A'}`
     ).join('\n\n');
 
     const prompt = `You are an expert travel planner. Create an optimized ${days}-day itinerary for ${travelers} visiting ${destination}.
@@ -47,6 +51,16 @@ Requirements:
 8. Recommend best transport mode (walk, taxi, metro, bus)
 9. Suggest meal times and restaurant types
 
+IMPORTANT: For each location in the time slots, you MUST include the complete location object with ALL these fields:
+- name: location name
+- country: country name
+- city: city name
+- description: location description
+- tags: array of tags
+- lat: latitude (number)
+- lng: longitude (number)
+- image: image URL if available
+
 Return ONLY a valid JSON object with this structure:
 {
   "days": [
@@ -56,14 +70,23 @@ Return ONLY a valid JSON object with this structure:
       "timeSlots": {
         "morning": {
           "time": "8:00 AM - 12:00 PM",
-          "location": { /* location object */ },
+          "location": {
+            "name": "Location Name",
+            "country": "Country",
+            "city": "City",
+            "description": "Description",
+            "tags": "Type",
+            "lat": 0.0,
+            "lng": 0.0,
+            "image": "image-url"
+          },
           "activities": ["activity1", "activity2"],
           "duration": "3 hours",
           "notes": "tips or recommendations"
         },
         "afternoon": {
           "time": "12:00 PM - 6:00 PM",
-          "location": { /* location object */ },
+          "location": { /* same structure as morning */ },
           "activities": ["activity1", "activity2"],
           "duration": "4 hours",
           "travelTime": "20 mins",
@@ -72,7 +95,7 @@ Return ONLY a valid JSON object with this structure:
         },
         "evening": {
           "time": "6:00 PM - 10:00 PM",
-          "location": { /* location object */ },
+          "location": { /* same structure as morning */ },
           "activities": ["dinner", "activity1"],
           "duration": "3 hours",
           "travelTime": "15 mins",

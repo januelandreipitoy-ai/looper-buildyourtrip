@@ -71,7 +71,7 @@ serve(async (req) => {
     const fetchImageForDestination = async (destinationName: string, city: string) => {
       try {
         // Create a more specific search query combining destination name and city
-        const specificQuery = `${destinationName} ${city} landmark tourist attraction`;
+        const specificQuery = `${destinationName} ${city}`;
         
         const unsplashResponse = await fetch(
           `https://api.unsplash.com/search/photos?query=${encodeURIComponent(specificQuery)}&per_page=1&orientation=landscape`,
@@ -89,9 +89,9 @@ serve(async (req) => {
           }
         }
         
-        // Fallback: try with just the destination name
+        // Fallback: try with just the city
         const fallbackResponse = await fetch(
-          `https://api.unsplash.com/search/photos?query=${encodeURIComponent(destinationName)}&per_page=1&orientation=landscape`,
+          `https://api.unsplash.com/search/photos?query=${encodeURIComponent(city + ' landmark')}&per_page=1&orientation=landscape`,
           {
             headers: {
               'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`,
@@ -108,7 +108,8 @@ serve(async (req) => {
       } catch (error) {
         console.error('Error fetching Unsplash image:', error);
       }
-      return `https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?w=800&q=80`;
+      // Final fallback with a more generic travel/landmark image
+      return `https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80`;
     };
 
     // Function to geocode using Photon API if coordinates are missing
