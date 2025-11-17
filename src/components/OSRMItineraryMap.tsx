@@ -28,7 +28,6 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
   const markersRef = useRef<any[]>([]);
   const polylineRef = useRef<any>(null);
   const [mapTheme, setMapTheme] = useState<'light' | 'dark'>('light');
-  const [selectedDestination, setSelectedDestination] = useState<{ lat: number; lon: number; name: string } | null>(null);
 
   // Extract all locations from the day's time slots with proper coordinate mapping
   const locations: Location[] = [
@@ -139,12 +138,9 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
         </div>
       `);
 
-      marker.on('click', () => {
-        setSelectedDestination(location);
-        if (onLocationClick) {
-          onLocationClick(location.name);
-        }
-      });
+      if (onLocationClick) {
+        marker.on('click', () => onLocationClick(location.name));
+      }
 
       markersRef.current.push(marker);
     });
@@ -223,10 +219,12 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
   }, [highlightedLocation, locations]);
 
   const handleOpenInGoogleMaps = () => {
-    if (selectedDestination) {
-      const url = `https://www.google.com/maps/dir/?api=1&destination=${selectedDestination.lat},${selectedDestination.lon}&travelmode=driving`;
-      window.open(url, '_blank');
-    }
+    if (locations.length === 0) return;
+    
+    // Build multi-stop Google Maps navigation URL with all locations in order
+    const waypoints = locations.map(loc => `${loc.lat},${loc.lon}`).join('/');
+    const url = `https://www.google.com/maps/dir/${waypoints}`;
+    window.open(url, '_blank');
   };
 
   return (
@@ -255,14 +253,12 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
               <Sun className="h-4 w-4" />
             )}
           </Button>
-          {selectedDestination && (
-            <Button
-              onClick={handleOpenInGoogleMaps}
-              className="absolute bottom-4 right-4 z-[1000] rounded-lg shadow-lg bg-background/95 hover:bg-background text-foreground border border-border"
-            >
-              Open in Google Maps
-            </Button>
-          )}
+          <Button
+            onClick={handleOpenInGoogleMaps}
+            className="absolute bottom-4 right-4 z-[1000] rounded-lg shadow-lg bg-background/95 hover:bg-background text-foreground border border-border"
+          >
+            Open in Google Maps
+          </Button>
         </div>
       )}
     </>
