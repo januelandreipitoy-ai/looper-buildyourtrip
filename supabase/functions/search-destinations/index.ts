@@ -23,6 +23,7 @@ serve(async (req) => {
 
     const SERPER_API_KEY = Deno.env.get('SERPER_API_KEY');
     const PEXELS_API_KEY = Deno.env.get('PEXELS_API_KEY');
+    const MAPILLARY_ACCESS_TOKEN = Deno.env.get('MAPILLARY_ACCESS_TOKEN');
     
     if (!SERPER_API_KEY) {
       console.error('SERPER_API_KEY not configured');
@@ -34,10 +35,10 @@ serve(async (req) => {
 
     if (!PEXELS_API_KEY) {
       console.error('PEXELS_API_KEY not configured');
-      return new Response(
-        JSON.stringify({ error: 'Image service not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    }
+
+    if (!MAPILLARY_ACCESS_TOKEN) {
+      console.error('MAPILLARY_ACCESS_TOKEN not configured');
     }
 
     console.log('Searching for:', query);
@@ -67,48 +68,81 @@ serve(async (req) => {
     const data = await response.json();
     console.log('Serper places count:', data.places?.length || 0);
 
-    // Fetch images from Pexels for each destination with more specific queries
-    const fetchImageForDestination = async (destinationName: string, city: string) => {
-      try {
-        // Create a more specific search query combining destination name and city
-        const specificQuery = `${destinationName} ${city}`;
-        
-        const pexelsResponse = await fetch(
-          `https://api.pexels.com/v1/search?query=${encodeURIComponent(specificQuery)}&per_page=1&orientation=landscape`,
-          {
-            headers: {
-              'Authorization': PEXELS_API_KEY,
-            },
+    // Fetch images from Mapillary (geolocated) with Pexels fallback
+    const fetchImageForDestination = async (destinationName: string, city: string, lat: number, lng: number) => {
+      // Try Mapillary first if coordinates are available and token is configured
+      if (MAPILLARY_ACCESS_TOKEN && lat !== 0 && lng !== 0) {
+        try {
+          const radius = 100; // 100 meters radius
+          const mapillaryResponse = await fetch(
+            `https://graph.mapillary.com/images?access_token=${MAPILLARY_ACCESS_TOKEN}&closeto=${lng},${lat}&radius=${radius}&fields=id,thumb_1024_url,thumb_2048_url&limit=1`,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+          
+          if (mapillaryResponse.ok) {
+            const mapillaryData = await mapillaryResponse.json();
+            if (mapillaryData.data && mapillaryData.data.length > 0) {
+              const image = mapillaryData.data[0];
+              // Use the highest quality thumbnail available
+              const imageUrl = image.thumb_2048_url || image.thumb_1024_url;
+              if (imageUrl) {
+                console.log(`Found Mapillary image for ${destinationName}`);
+                return imageUrl;
+              }
+            }
           }
-        );
-        
-        if (pexelsResponse.ok) {
-          const pexelsData = await pexelsResponse.json();
-          if (pexelsData.photos && pexelsData.photos.length > 0) {
-            return pexelsData.photos[0].src.large;
-          }
+        } catch (error) {
+          console.error('Error fetching Mapillary image:', error);
         }
-        
-        // Fallback: try with just the city
-        const fallbackResponse = await fetch(
-          `https://api.pexels.com/v1/search?query=${encodeURIComponent(city + ' landmark')}&per_page=1&orientation=landscape`,
-          {
-            headers: {
-              'Authorization': PEXELS_API_KEY,
-            },
-          }
-        );
-        
-        if (fallbackResponse.ok) {
-          const fallbackData = await fallbackResponse.json();
-          if (fallbackData.photos && fallbackData.photos.length > 0) {
-            return fallbackData.photos[0].src.large;
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching Pexels image:', error);
       }
-      // Final fallback with a generic travel/landmark image from Pexels
+
+      // Fallback to Pexels if Mapillary didn't work
+      if (PEXELS_API_KEY) {
+        try {
+          const specificQuery = `${destinationName} ${city}`;
+          
+          const pexelsResponse = await fetch(
+            `https://api.pexels.com/v1/search?query=${encodeURIComponent(specificQuery)}&per_page=1&orientation=landscape`,
+            {
+              headers: {
+                'Authorization': PEXELS_API_KEY,
+              },
+            }
+          );
+          
+          if (pexelsResponse.ok) {
+            const pexelsData = await pexelsResponse.json();
+            if (pexelsData.photos && pexelsData.photos.length > 0) {
+              return pexelsData.photos[0].src.large;
+            }
+          }
+          
+          // Try with just the city
+          const fallbackResponse = await fetch(
+            `https://api.pexels.com/v1/search?query=${encodeURIComponent(city + ' landmark')}&per_page=1&orientation=landscape`,
+            {
+              headers: {
+                'Authorization': PEXELS_API_KEY,
+              },
+            }
+          );
+          
+          if (fallbackResponse.ok) {
+            const fallbackData = await fallbackResponse.json();
+            if (fallbackData.photos && fallbackData.photos.length > 0) {
+              return fallbackData.photos[0].src.large;
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching Pexels image:', error);
+        }
+      }
+      
+      // Final fallback
       return `https://images.pexels.com/photos/1128678/pexels-photo-1128678.jpeg?auto=compress&cs=tinysrgb&w=800`;
     };
 
@@ -141,7 +175,6 @@ serve(async (req) => {
     const destinationsWithImages = await Promise.all(
       places.map(async (place: any, index: number) => {
         const cityName = place.city || query;
-        const image = await fetchImageForDestination(place.title, cityName);
         
         let lat = place.gps_coordinates?.latitude || 0;
         let lng = place.gps_coordinates?.longitude || 0;
@@ -156,6 +189,9 @@ serve(async (req) => {
             console.log(`Found coordinates: ${lat}, ${lng}`);
           }
         }
+        
+        // Fetch image (Mapillary first, then Pexels fallback)
+        const image = await fetchImageForDestination(place.title, cityName, lat, lng);
         
         return {
           id: `place-${place.position || index}`,
