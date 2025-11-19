@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Heart, Trash2, Plus, ChevronDown, ChevronRight, Edit2, Check, X, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { GenerateItineraryButton } from '@/components/GenerateItineraryButton';
+import { HeartButton } from '@/components/HeartButton';
+import { DestinationDetailPopup } from '@/components/DestinationDetailPopup';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,6 +45,8 @@ export const FavoritesPanel = ({ isOpen, onClose }: FavoritesPanelProps) => {
   const [newBookmarkName, setNewBookmarkName] = useState('');
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [draggedLocation, setDraggedLocation] = useState<SavedLocation | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<SavedLocation | null>(null);
+  const [isDetailPopupOpen, setIsDetailPopupOpen] = useState(false);
 
   const toggleBookmark = (id: string) => {
     const newExpanded = new Set(expandedBookmarks);
@@ -246,13 +250,19 @@ export const FavoritesPanel = ({ isOpen, onClose }: FavoritesPanelProps) => {
                     )}
                   </div>
 
-                  {expandedBookmarks.has(bookmark.id) && (
                     <div className="space-y-2 mt-2 ml-8">
                       {bookmark.locationIds.map(locId => {
                         const location = savedLocations.find(l => l.id === locId);
                         if (!location) return null;
                         return (
-                          <Card key={location.id} className="p-2">
+                          <Card 
+                            key={location.id} 
+                            className="p-2 cursor-pointer hover:shadow-md transition-all"
+                            onClick={() => {
+                              setSelectedLocation(location);
+                              setIsDetailPopupOpen(true);
+                            }}
+                          >
                             <div className="flex items-center gap-2">
                               <img
                                 src={location.image}
@@ -267,7 +277,10 @@ export const FavoritesPanel = ({ isOpen, onClose }: FavoritesPanelProps) => {
                                 variant="ghost"
                                 size="icon"
                                 className="h-6 w-6 flex-shrink-0"
-                                onClick={() => removeLocationFromBookmark(bookmark.id, location.id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeLocationFromBookmark(bookmark.id, location.id);
+                                }}
                               >
                                 <X className="h-3 w-3" />
                               </Button>
@@ -276,7 +289,6 @@ export const FavoritesPanel = ({ isOpen, onClose }: FavoritesPanelProps) => {
                         );
                       })}
                     </div>
-                  )}
                 </Card>
               ))}
 
@@ -287,15 +299,19 @@ export const FavoritesPanel = ({ isOpen, onClose }: FavoritesPanelProps) => {
                   {unbookmarkedLocations.map(location => (
                     <Card
                       key={location.id}
-                      className="p-3 cursor-move hover:shadow-md transition-shadow"
+                      className="p-3 cursor-pointer hover:shadow-md transition-all"
                       draggable
                       onDragStart={() => handleDragStart(location)}
+                      onClick={() => {
+                        setSelectedLocation(location);
+                        setIsDetailPopupOpen(true);
+                      }}
                     >
                       <div className="flex items-center gap-3">
                         <img
                           src={location.image}
                           alt={location.name}
-                          className="w-16 h-16 rounded object-cover"
+                          className="w-16 h-16 rounded-lg object-cover"
                         />
                         <div className="flex-1 min-w-0">
                           <h4 className="font-semibold truncate">{location.name}</h4>
@@ -308,13 +324,12 @@ export const FavoritesPanel = ({ isOpen, onClose }: FavoritesPanelProps) => {
                             ))}
                           </div>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => removeLocation(location.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <HeartButton 
+                            isSaved={true}
+                            onClick={() => removeLocation(location.id)}
+                          />
+                        </div>
                       </div>
                     </Card>
                   ))}
@@ -354,6 +369,12 @@ export const FavoritesPanel = ({ isOpen, onClose }: FavoritesPanelProps) => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <DestinationDetailPopup 
+        location={selectedLocation}
+        isOpen={isDetailPopupOpen}
+        onClose={() => setIsDetailPopupOpen(false)}
+      />
     </>
   );
 };
