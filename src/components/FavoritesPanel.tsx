@@ -5,8 +5,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Heart, Trash2, Plus, ChevronDown, ChevronRight, Edit2, Check, X } from 'lucide-react';
+import { Heart, Trash2, Plus, ChevronDown, ChevronRight, Edit2, Check, X, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
+import { GenerateItineraryButton } from '@/components/GenerateItineraryButton';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -194,7 +195,7 @@ export const FavoritesPanel = ({ isOpen, onClose }: FavoritesPanelProps) => {
                             <X className="h-4 w-4" />
                           </Button>
                         </div>
-                      ) : (
+                       ) : (
                         <>
                           <h3 className="font-semibold">{bookmark.name}</h3>
                           <span className="text-sm text-muted-foreground">
@@ -206,6 +207,22 @@ export const FavoritesPanel = ({ isOpen, onClose }: FavoritesPanelProps) => {
                     
                     {editingBookmarkId !== bookmark.id && (
                       <div className="flex gap-1">
+                        {/* Generate Itinerary for Bookmark */}
+                        {bookmark.locationIds.length >= 2 && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            onClick={() => {
+                              const bookmarkLocations = savedLocations.filter(loc => bookmark.locationIds.includes(loc.id));
+                              // Trigger generate itinerary with bookmark locations
+                            }}
+                            title="Generate itinerary for this bookmark"
+                          >
+                            <Sparkles className="h-3 w-3" />
+                          </Button>
+                        )}
+                        
                         <Button
                           variant="ghost"
                           size="icon"
@@ -309,6 +326,13 @@ export const FavoritesPanel = ({ isOpen, onClose }: FavoritesPanelProps) => {
                   <Heart className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>No saved locations yet</p>
                   <p className="text-sm">Start exploring to add favorites</p>
+                </div>
+              )}
+              
+              {/* Generate Itinerary Button */}
+              {savedLocations.length > 0 && (
+                <div className="sticky bottom-0 bg-background border-t border-border p-4 mt-4">
+                  <GenerateItineraryButton fullWidth />
                 </div>
               )}
             </div>

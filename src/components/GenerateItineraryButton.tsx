@@ -1,19 +1,42 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useTrip } from '@/contexts/TripContext';
+import { useTrip, SavedLocation } from '@/contexts/TripContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Loader2, Route, Sparkles } from 'lucide-react';
+import { Loader2, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-export const GenerateItineraryButton = () => {
+interface GenerateItineraryButtonProps {
+  locations?: SavedLocation[];
+  variant?: 'default' | 'outline' | 'ghost';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  className?: string;
+  fullWidth?: boolean;
+  label?: string;
+}
+
+export const GenerateItineraryButton = ({ 
+  locations, 
+  variant = 'default',
+  size = 'lg',
+  className = '',
+  fullWidth = false,
+  label
+}: GenerateItineraryButtonProps) => {
   const { savedLocations, setAIItinerary, searchParams } = useTrip();
   const [isGenerating, setIsGenerating] = useState(false);
   const navigate = useNavigate();
 
+  const locationsToUse = locations || savedLocations;
+
   const handleGenerateItinerary = async () => {
-    if (savedLocations.length < 2) {
+    if (locationsToUse.length < 2) {
       toast.error('Add at least 2 locations to generate an itinerary');
+      return;
+    }
+
+    if (!searchParams?.destination || !searchParams?.startDate || !searchParams?.endDate) {
+      toast.error('Please complete your search with destination and dates first');
       return;
     }
 
@@ -24,7 +47,7 @@ export const GenerateItineraryButton = () => {
 
       const { data, error } = await supabase.functions.invoke('generate-ai-itinerary', {
         body: { 
-          locations: savedLocations,
+          locations: locationsToUse,
           searchParams 
         },
       });
@@ -50,14 +73,17 @@ export const GenerateItineraryButton = () => {
     }
   };
 
-  if (savedLocations.length === 0) return null;
+  if (locationsToUse.length === 0) return null;
+
+  const buttonLabel = label || `Generate AI Itinerary${locationsToUse.length > 0 ? ` (${locationsToUse.length} places)` : ''}`;
 
   return (
     <Button
       onClick={handleGenerateItinerary}
-      disabled={isGenerating || savedLocations.length < 2}
-      className="gap-2"
-      size="lg"
+      disabled={isGenerating || locationsToUse.length < 2}
+      className={`gap-2 ${fullWidth ? 'w-full' : ''} ${className}`}
+      variant={variant}
+      size={size}
     >
       {isGenerating ? (
         <>
@@ -67,8 +93,7 @@ export const GenerateItineraryButton = () => {
       ) : (
         <>
           <Sparkles className="h-4 w-4" />
-          Generate AI Itinerary
-          {savedLocations.length > 0 && ` (${savedLocations.length} places)`}
+          {buttonLabel}
         </>
       )}
     </Button>
