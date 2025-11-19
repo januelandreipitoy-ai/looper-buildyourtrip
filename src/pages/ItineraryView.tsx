@@ -24,9 +24,20 @@ function SortableDayButton({ day, isSelected, onClick }: SortableDayButtonProps)
   const style = { transform: CSS.Transform.toString(transform), transition };
 
   return (
-    <Button ref={setNodeRef} style={style} {...attributes} {...listeners} onClick={onClick} variant={isSelected ? 'default' : 'outline'} size="lg" className="whitespace-nowrap min-w-[120px] cursor-grab active:cursor-grabbing">
+    <button 
+      ref={setNodeRef} 
+      style={style} 
+      {...attributes} 
+      {...listeners} 
+      onClick={onClick} 
+      className={`px-6 py-2 rounded-2xl font-medium transition-all duration-200 hover:scale-105 active:scale-95 min-w-[120px] cursor-grab active:cursor-grabbing ${
+        isSelected 
+          ? 'bg-primary text-primary-foreground shadow-lg' 
+          : 'bg-muted text-foreground hover:bg-muted/80'
+      }`}
+    >
       Day {day.dayNumber}
-    </Button>
+    </button>
   );
 }
 
@@ -37,6 +48,7 @@ const ItineraryView = () => {
   const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
   const [selectedDay, setSelectedDay] = useState<number>(1);
   const [isAISidebarOpen, setIsAISidebarOpen] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
 
@@ -91,6 +103,16 @@ const ItineraryView = () => {
     }
   };
 
+  const handleDaySelect = (dayNumber: number) => {
+    if (dayNumber !== selectedDay) {
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setSelectedDay(dayNumber);
+        setIsTransitioning(false);
+      }, 150);
+    }
+  };
+
   const getBookingUrl = (locationName: string) => `https://www.google.com/search?q=${encodeURIComponent(locationName + ' booking')}`;
   const requiresBooking = (tags?: string[]) => tags?.some(tag => ['Activities & Attractions', 'Tours', 'Museums'].includes(tag)) || false;
 
@@ -111,14 +133,14 @@ const ItineraryView = () => {
             <ScrollArea className="w-full">
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext items={aiItinerary.days.map(d => d.dayNumber.toString())} strategy={horizontalListSortingStrategy}>
-                  <div className="flex gap-2 pb-2">{aiItinerary.days.map(day => <SortableDayButton key={day.dayNumber} day={day} isSelected={selectedDay === day.dayNumber} onClick={() => setSelectedDay(day.dayNumber)} />)}</div>
+                  <div className="flex gap-2 pb-2">{aiItinerary.days.map(day => <SortableDayButton key={day.dayNumber} day={day} isSelected={selectedDay === day.dayNumber} onClick={() => handleDaySelect(day.dayNumber)} />)}</div>
                 </SortableContext>
               </DndContext>
             </ScrollArea>
           </div>
         </div>
         <div className="h-[50vh] w-full"><OSRMItineraryMap day={currentDay} highlightedLocation={highlightedLocation} onLocationClick={setHighlightedLocation} /></div>
-        <div className="container mx-auto p-6">
+        <div className={`container mx-auto p-6 transition-opacity duration-300 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
           <h2 className="text-2xl font-bold mb-6">Day {selectedDay} Itinerary</h2>
           <div className="grid gap-6">
             {timeSlots.map(({ period, slot }, index) => {
@@ -153,7 +175,7 @@ const ItineraryView = () => {
             <h2 className="text-lg font-bold">{searchParams?.destination || 'Itinerary'}</h2>
             <Button onClick={handleDownloadPDF} variant="outline" size="sm"><Download className="h-4 w-4" /></Button>
           </div>
-          <ScrollArea className="w-full"><div className="flex gap-2">{aiItinerary.days.map(day => <Button key={day.dayNumber} onClick={() => setSelectedDay(day.dayNumber)} variant={selectedDay === day.dayNumber ? 'default' : 'outline'} size="sm" className="whitespace-nowrap">Day {day.dayNumber}</Button>)}</div></ScrollArea>
+          <ScrollArea className="w-full"><div className="flex gap-2">{aiItinerary.days.map(day => <Button key={day.dayNumber} onClick={() => handleDaySelect(day.dayNumber)} variant={selectedDay === day.dayNumber ? 'default' : 'outline'} size="sm" className="whitespace-nowrap">Day {day.dayNumber}</Button>)}</div></ScrollArea>
         </div>
         <div className="flex-1"><OSRMItineraryMap day={currentDay} highlightedLocation={highlightedLocation} onLocationClick={setHighlightedLocation} /></div>
         <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen}>

@@ -6,6 +6,8 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { FavoritesPanel } from '@/components/FavoritesPanel';
 import { Button } from '@/components/ui/button';
+import { HeartButton } from '@/components/HeartButton';
+import { DestinationDetailPopup } from '@/components/DestinationDetailPopup';
 
 interface Destination {
   id: string;
@@ -22,6 +24,8 @@ const Explore = () => {
   const [searchResults, setSearchResults] = useState<Destination[]>([]);
   const [searchInput, setSearchInput] = useState<string>('');
   const [isFavoritesPanelOpen, setIsFavoritesPanelOpen] = useState(false);
+  const [selectedDestination, setSelectedDestination] = useState<SavedLocation | null>(null);
+  const [isDetailPopupOpen, setIsDetailPopupOpen] = useState(false);
   const { addLocation, savedLocations } = useTrip();
 
   const searchQuery = (location.state as any)?.searchQuery || '';
@@ -105,7 +109,11 @@ const Explore = () => {
     ? searchResults
     : defaultDestinations;
 
-  const handleSaveLocation = async (destination: any) => {
+  const handleSaveLocation = async (destination: any, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+    }
+    
     try {
       let lat = destination.lat;
       let lon = destination.lon;
@@ -144,6 +152,46 @@ const Explore = () => {
     }
   };
 
+  const handleDestinationClick = async (destination: any) => {
+    let lat = destination.lat;
+    let lon = destination.lon;
+
+    if (!lat || !lon) {
+      try {
+        const geocodeResponse = await fetch(
+          `https://photon.komoot.io/api/?q=${encodeURIComponent(destination.location)}&limit=1`
+        );
+        const geocodeData = await geocodeResponse.json();
+
+        if (geocodeData.features && geocodeData.features.length > 0) {
+          const coords = geocodeData.features[0].geometry.coordinates;
+          lon = coords[0];
+          lat = coords[1];
+        }
+      } catch (error) {
+        console.error('Error geocoding:', error);
+      }
+    }
+
+    const savedLocation: SavedLocation = {
+      id: destination.id,
+      name: destination.name,
+      description: destination.location,
+      image: destination.image,
+      lat: lat || 0,
+      lng: lon || 0,
+      tags: [destination.category],
+      type: destination.category || 'landmark'
+    };
+
+    setSelectedDestination(savedLocation);
+    setIsDetailPopupOpen(true);
+  };
+
+  const isDestinationSaved = (destinationId: string) => {
+    return savedLocations.some(loc => loc.id === destinationId);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Button 
@@ -158,6 +206,12 @@ const Explore = () => {
       <FavoritesPanel 
         isOpen={isFavoritesPanelOpen} 
         onClose={() => setIsFavoritesPanelOpen(false)} 
+      />
+
+      <DestinationDetailPopup 
+        location={selectedDestination}
+        isOpen={isDetailPopupOpen}
+        onClose={() => setIsDetailPopupOpen(false)}
       />
       
       <div className="flex-1 overflow-auto">
@@ -233,6 +287,7 @@ const Explore = () => {
             {displayedDestinations.map((destination) => (
             <div
               key={destination.id}
+              onClick={() => handleDestinationClick(destination)}
               className="break-inside-avoid mb-4 group relative overflow-hidden rounded-2xl cursor-pointer transition-all hover:shadow-xl"
             >
               <img
@@ -240,20 +295,19 @@ const Explore = () => {
                 alt={destination.name}
                 className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
               />
+              <div className="absolute top-2 right-2 z-10">
+                <HeartButton 
+                  isSaved={isDestinationSaved(destination.id)}
+                  onClick={(e) => handleSaveLocation(destination, e)}
+                />
+              </div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
                   <h3 className="font-bold text-lg mb-1">{destination.name}</h3>
-                  <p className="text-sm flex items-center gap-1 mb-2">
+                  <p className="text-sm flex items-center gap-1">
                     <MapPin size={14} />
                     {destination.location}
                   </p>
-                  <button
-                    onClick={() => handleSaveLocation(destination)}
-                    className="w-full bg-white/90 hover:bg-white text-gray-900 font-semibold py-2 px-4 rounded-full flex items-center justify-center gap-2 transition-colors"
-                  >
-                    <Heart size={16} />
-                    Save
-                  </button>
                 </div>
               </div>
             </div>
