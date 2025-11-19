@@ -80,12 +80,19 @@ export interface TripSuggestions {
   itinerary: AIItinerary;
 }
 
+export interface Bookmark {
+  id: string;
+  name: string;
+  locationIds: string[];
+}
+
 interface TripContextType {
   savedLocations: SavedLocation[];
   itinerary: ItineraryStop[];
   aiItinerary: AIItinerary | null;
   searchParams: TripSearchParams | null;
   tripSuggestions: TripSuggestions | null;
+  bookmarks: Bookmark[];
   addLocation: (location: SavedLocation) => void;
   removeLocation: (id: string) => void;
   isLocationSaved: (id: string) => boolean;
@@ -94,6 +101,12 @@ interface TripContextType {
   clearItinerary: () => void;
   setSearchParams: (params: TripSearchParams) => void;
   setTripSuggestions: (suggestions: TripSuggestions | null) => void;
+  addBookmark: (name: string) => void;
+  removeBookmark: (id: string) => void;
+  renameBookmark: (id: string, name: string) => void;
+  addLocationToBookmark: (bookmarkId: string, locationId: string) => void;
+  removeLocationFromBookmark: (bookmarkId: string, locationId: string) => void;
+  clearAllSavedLocations: () => void;
 }
 
 const TripContext = createContext<TripContextType | undefined>(undefined);
@@ -124,9 +137,18 @@ export const TripProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return saved ? JSON.parse(saved) : null;
   });
 
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>(() => {
+    const saved = localStorage.getItem('bookmarks');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   useEffect(() => {
     localStorage.setItem('savedLocations', JSON.stringify(savedLocations));
   }, [savedLocations]);
+
+  useEffect(() => {
+    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+  }, [bookmarks]);
 
   useEffect(() => {
     localStorage.setItem('itinerary', JSON.stringify(itinerary));
@@ -192,6 +214,40 @@ export const TripProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setTripSuggestionsState(suggestions);
   };
 
+  const addBookmark = (name: string) => {
+    const newBookmark: Bookmark = {
+      id: Date.now().toString(),
+      name,
+      locationIds: []
+    };
+    setBookmarks([...bookmarks, newBookmark]);
+  };
+
+  const removeBookmark = (id: string) => {
+    setBookmarks(bookmarks.filter(b => b.id !== id));
+  };
+
+  const renameBookmark = (id: string, name: string) => {
+    setBookmarks(bookmarks.map(b => b.id === id ? { ...b, name } : b));
+  };
+
+  const addLocationToBookmark = (bookmarkId: string, locationId: string) => {
+    setBookmarks(bookmarks.map(b => 
+      b.id === bookmarkId ? { ...b, locationIds: [...b.locationIds, locationId] } : b
+    ));
+  };
+
+  const removeLocationFromBookmark = (bookmarkId: string, locationId: string) => {
+    setBookmarks(bookmarks.map(b => 
+      b.id === bookmarkId ? { ...b, locationIds: b.locationIds.filter(id => id !== locationId) } : b
+    ));
+  };
+
+  const clearAllSavedLocations = () => {
+    setSavedLocations([]);
+    setBookmarks([]);
+  };
+
   return (
     <TripContext.Provider
       value={{
@@ -200,6 +256,7 @@ export const TripProvider: React.FC<{ children: React.ReactNode }> = ({ children
         aiItinerary,
         searchParams,
         tripSuggestions,
+        bookmarks,
         addLocation,
         removeLocation,
         isLocationSaved,
@@ -208,6 +265,12 @@ export const TripProvider: React.FC<{ children: React.ReactNode }> = ({ children
         clearItinerary,
         setSearchParams,
         setTripSuggestions,
+        addBookmark,
+        removeBookmark,
+        renameBookmark,
+        addLocationToBookmark,
+        removeLocationFromBookmark,
+        clearAllSavedLocations,
       }}
     >
       {children}
