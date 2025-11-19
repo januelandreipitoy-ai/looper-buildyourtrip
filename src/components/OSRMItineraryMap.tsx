@@ -154,6 +154,13 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
     // Fetch OSRM route and draw polyline
     const fetchRoute = async () => {
       if (locations.length < 2) return;
+      if (!map || !L) return;
+
+      // Validate all locations have valid coordinates
+      const validLocations = locations.every(
+        loc => loc.lat && loc.lon && !isNaN(loc.lat) && !isNaN(loc.lon)
+      );
+      if (!validLocations) return;
 
       const coords = locations.map(loc => `${loc.lon},${loc.lat}`).join(';');
       const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
@@ -166,39 +173,57 @@ const OSRMItineraryMap = ({ day, highlightedLocation, onLocationClick }: OSRMIti
           const route = data.routes[0];
           const coordinates = route.geometry.coordinates.map((coord: [number, number]) => [coord[1], coord[0]]);
 
-          const routeColor = mapTheme === 'dark' ? '#CBD83B' : '#A88AED';
-          const polyline = L.polyline(coordinates, {
-            color: routeColor,
-            weight: 6,
-            opacity: 1,
-            smoothFactor: 1,
-          }).addTo(map);
+          // Validate coordinates before creating polyline
+          if (coordinates.length > 0 && coordinates.every((c: number[]) => c[0] && c[1])) {
+            const routeColor = mapTheme === 'dark' ? '#CBD83B' : '#A88AED';
+            
+            // Wait for map to be ready
+            map.whenReady(() => {
+              const polyline = L.polyline(coordinates, {
+                color: routeColor,
+                weight: 6,
+                opacity: 1,
+                smoothFactor: 1,
+              });
+              
+              if (mapInstanceRef.current) {
+                polyline.addTo(mapInstanceRef.current);
+                polylineRef.current = polyline;
+              }
+            });
 
-          polylineRef.current = polyline;
-
-          // Fit map to show all markers and route
-          const bounds = L.latLngBounds(locations.map(loc => [loc.lat, loc.lon]));
-          map.fitBounds(bounds, { padding: [50, 50] });
+            // Fit map to show all markers and route
+            const bounds = L.latLngBounds(locations.map(loc => [loc.lat, loc.lon]));
+            map.fitBounds(bounds, { padding: [50, 50] });
+          }
         }
       } catch (error) {
         console.error('Error fetching OSRM route:', error);
         
-        // Fallback: draw simple polyline
-        const routeColor = mapTheme === 'dark' ? '#CBD83B' : '#A88AED';
-        const simplePolyline = L.polyline(
-          locations.map(loc => [loc.lat, loc.lon]),
-          {
-            color: routeColor,
-            weight: 6,
-            opacity: 1,
-            dashArray: '10, 10',
-          }
-        ).addTo(map);
+        // Fallback: draw simple polyline only if we have valid locations
+        if (locations.length >= 2) {
+          const routeColor = mapTheme === 'dark' ? '#CBD83B' : '#A88AED';
+          
+          map.whenReady(() => {
+            const simplePolyline = L.polyline(
+              locations.map(loc => [loc.lat, loc.lon]),
+              {
+                color: routeColor,
+                weight: 6,
+                opacity: 1,
+                dashArray: '10, 10',
+              }
+            );
+            
+            if (mapInstanceRef.current) {
+              simplePolyline.addTo(mapInstanceRef.current);
+              polylineRef.current = simplePolyline;
+            }
+          });
 
-        polylineRef.current = simplePolyline;
-
-        const bounds = L.latLngBounds(locations.map(loc => [loc.lat, loc.lon]));
-        map.fitBounds(bounds, { padding: [50, 50] });
+          const bounds = L.latLngBounds(locations.map(loc => [loc.lat, loc.lon]));
+          map.fitBounds(bounds, { padding: [50, 50] });
+        }
       }
     };
 
