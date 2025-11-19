@@ -1,15 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Compass, Heart, Calendar, DollarSign } from 'lucide-react';
+import { Compass, Calendar, DollarSign } from 'lucide-react';
 import Logo from './Logo';
-import { useTrip } from '@/contexts/TripContext';
+import { ThemeToggle } from './ThemeToggle';
 
 const Navigation = () => {
   const location = useLocation();
-  const { savedLocations } = useTrip();
 
   const navItems = [
     { path: '/explore', label: 'Explore', icon: Compass },
-    { path: '/saved', label: 'Saved', icon: Heart, count: savedLocations.length },
     { path: '/itinerary', label: 'Itinerary', icon: Calendar },
     { path: '/pricing', label: 'Pricing', icon: DollarSign },
   ];
@@ -19,12 +17,12 @@ const Navigation = () => {
       <div className="container mx-auto px-2 sm:px-4">
         <div className="flex items-center justify-between h-14 sm:h-16">
           <Logo />
-          <div className="flex items-center gap-1 sm:gap-2">
-            {navItems.map(({ path, label, icon: Icon, count }) => (
+          <div className="flex items-center gap-1 sm:gap-3">
+            {navItems.map(({ path, label, icon: Icon }) => (
               <Link
                 key={path}
                 to={path}
-                className={`relative flex items-center gap-1 sm:gap-2 px-2 sm:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-all duration-300 text-xs sm:text-base ${
+                className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-all duration-300 text-xs sm:text-base ${
                   location.pathname === path
                     ? 'bg-gradient-to-r from-primary via-accent to-secondary text-white shadow-lg'
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted'
@@ -32,13 +30,9 @@ const Navigation = () => {
               >
                 <Icon className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden xs:inline">{label}</span>
-                {count !== undefined && count > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                    {count}
-                  </span>
-                )}
               </Link>
             ))}
+            <ThemeToggle />
           </div>
         </div>
       </div>

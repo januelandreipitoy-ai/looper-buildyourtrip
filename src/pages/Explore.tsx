@@ -5,6 +5,8 @@ import { useTrip, SavedLocation } from '@/contexts/TripContext';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { TripSuggestionsSidebar } from '@/components/TripSuggestionsSidebar';
+import { FavoritesPanel } from '@/components/FavoritesPanel';
+import { Button } from '@/components/ui/button';
 
 interface Destination {
   id: string;
@@ -20,7 +22,8 @@ const Explore = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<Destination[]>([]);
   const [searchInput, setSearchInput] = useState<string>('');
-  const { addLocation } = useTrip();
+  const [isFavoritesPanelOpen, setIsFavoritesPanelOpen] = useState(false);
+  const { addLocation, savedLocations } = useTrip();
 
   // Get search query from navigation state
   const searchQuery = (location.state as any)?.searchQuery || '';
@@ -156,7 +159,30 @@ const Explore = () => {
   const displayedDestinations = searchResults.length > 0 ? searchResults : defaultDestinations;
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background pt-14 relative">
+      {/* Favorites Button */}
+      <Button
+        variant="outline"
+        size="sm"
+        className="fixed top-20 right-4 z-50 shadow-lg"
+        onClick={() => setIsFavoritesPanelOpen(true)}
+      >
+        <Heart className="h-4 w-4 mr-2" />
+        <span className="hidden sm:inline">Favorites</span>
+        {savedLocations.length > 0 && (
+          <span className="ml-2 bg-primary text-primary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+            {savedLocations.length}
+          </span>
+        )}
+      </Button>
+
+      <FavoritesPanel 
+        isOpen={isFavoritesPanelOpen}
+        onClose={() => setIsFavoritesPanelOpen(false)}
+      />
+      
+      <TripSuggestionsSidebar />
+      
       <div className="flex-1 overflow-auto">
         {/* Header with Category Filters */}
         <div className="sticky top-16 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm z-10">
@@ -263,8 +289,6 @@ const Explore = () => {
           )}
         </div>
       </div>
-      
-      <TripSuggestionsSidebar />
     </div>
   );
 };
