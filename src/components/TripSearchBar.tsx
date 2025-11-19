@@ -61,52 +61,16 @@ export const TripSearchBar = ({ className }: TripSearchBarProps) => {
         pets,
       };
 
-      // Save search parameters
+      // Save search parameters for later use in itinerary generation
       setSearchParams(searchParamsData);
-
-      // Generate trip suggestions using AI
-      const { data, error } = await supabase.functions.invoke('generate-trip-suggestions', {
-        body: { searchParams: searchParamsData }
-      });
-
-      if (error) throw error;
-
-      if (data?.success && data?.suggestions) {
-        // Map location IDs to actual location objects in itinerary
-        const itineraryWithLocations = {
-          ...data.suggestions.itinerary,
-          days: data.suggestions.itinerary.days.map((day: any) => ({
-            ...day,
-            timeSlots: {
-              morning: {
-                ...day.timeSlots.morning,
-                location: data.suggestions.locations.find((loc: any) => loc.id === day.timeSlots.morning.locationId)
-              },
-              afternoon: {
-                ...day.timeSlots.afternoon,
-                location: data.suggestions.locations.find((loc: any) => loc.id === day.timeSlots.afternoon.locationId)
-              },
-              evening: {
-                ...day.timeSlots.evening,
-                location: data.suggestions.locations.find((loc: any) => loc.id === day.timeSlots.evening.locationId)
-              }
-            }
-          }))
-        };
-
-        setTripSuggestions({
-          locations: data.suggestions.locations,
-          itinerary: itineraryWithLocations
-        });
-
-        toast.success(`Generated AI suggestions for ${destination}!`);
-      }
       
-      // Navigate to explore page to see results
+      toast.success(`Searching ${destination}...`);
+      
+      // Navigate to explore page to browse destination visually
       navigate('/explore', { state: { searchQuery: destination } });
     } catch (error) {
       console.error('Search error:', error);
-      toast.error('Failed to generate trip suggestions. Please try again.');
+      toast.error('Failed to search. Please try again.');
     } finally {
       setIsSearching(false);
     }

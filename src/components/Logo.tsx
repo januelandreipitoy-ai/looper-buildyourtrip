@@ -8,7 +8,7 @@ export default function Logo() {
       className="flex items-center gap-3 hover:opacity-80 transition-opacity"
     >
       <img src={looperLogo} alt="Looper" className="h-8 w-8 sm:h-10 sm:w-10 object-contain" />
-      <span className="font-looper font-bold text-2xl sm:text-3xl" style={{ color: '#8A78B8' }}>
+      <span className="font-looper font-bold text-2xl sm:text-3xl text-logo">
         Looper
       </span>
     </Link>

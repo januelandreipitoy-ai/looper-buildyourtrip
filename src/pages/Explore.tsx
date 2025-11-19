@@ -4,7 +4,6 @@ import { useLocation } from 'react-router-dom';
 import { useTrip, SavedLocation } from '@/contexts/TripContext';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { TripSuggestionsSidebar } from '@/components/TripSuggestionsSidebar';
 import { FavoritesPanel } from '@/components/FavoritesPanel';
 import { Button } from '@/components/ui/button';
 
@@ -25,7 +24,6 @@ const Explore = () => {
   const [isFavoritesPanelOpen, setIsFavoritesPanelOpen] = useState(false);
   const { addLocation, savedLocations } = useTrip();
 
-  // Get search query from navigation state
   const searchQuery = (location.state as any)?.searchQuery || '';
 
   const categoryTags = [
@@ -36,7 +34,6 @@ const Explore = () => {
     'Food & Drink'
   ];
 
-  // Sample Japan destinations for masonry grid
   const destinations: Destination[] = [
     { id: '1', name: 'Chureito Pagoda', location: 'Fujiyoshida, Japan', image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&auto=format&fit=crop', category: 'Landmarks' },
     { id: '2', name: 'Japan Travel Guide', location: 'Japan', image: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&auto=format&fit=crop', category: 'Travel' },
@@ -53,7 +50,6 @@ const Explore = () => {
     { id: '13', name: 'Neon Streets', location: 'Tokyo, Japan', image: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=800&auto=format&fit=crop', category: 'Nightlife' },
   ];
 
-  // Default destinations when no search
   const defaultDestinations: Destination[] = [
     { id: '1', name: 'Chureito Pagoda', location: 'Fujiyoshida, Japan', image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&auto=format&fit=crop', category: 'Landmarks' },
     { id: '2', name: 'Japan Travel Guide', location: 'Japan', image: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&auto=format&fit=crop', category: 'Travel' },
@@ -61,46 +57,35 @@ const Explore = () => {
     { id: '4', name: 'Sensoji Temple', location: 'Tokyo, Japan', image: 'https://images.unsplash.com/photo-1478436127897-769e1b3f0f36?w=800&auto=format&fit=crop', category: 'Landmarks' },
     { id: '5', name: 'Shibuya Crossing', location: 'Tokyo, Japan', image: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=800&auto=format&fit=crop', category: 'Street' },
     { id: '6', name: 'Mount Fuji Street', location: 'Japan', image: 'https://images.unsplash.com/photo-1590559899731-a382839e5549?w=800&auto=format&fit=crop', category: 'Nature' },
-    { id: '7', name: 'Traditional Izakaya', location: 'Tokyo, Japan', image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop', category: 'Restaurants' },
-    { id: '8', name: 'Cherry Blossoms', location: 'Japan', image: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&auto=format&fit=crop', category: 'Nature' },
-    { id: '9', name: 'Tokyo Tower', location: 'Tokyo, Japan', image: 'https://images.unsplash.com/photo-1536098561742-ca998e48cbcc?w=800&auto=format&fit=crop', category: 'Landmarks' },
-    { id: '10', name: 'Lost in Japan', location: 'Japan', image: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&auto=format&fit=crop', category: 'Travel' },
-    { id: '11', name: 'Traditional Streets', location: 'Kyoto, Japan', image: 'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=800&auto=format&fit=crop', category: 'Street' },
-    { id: '12', name: 'Cherry Blossom Alley', location: 'Tokyo, Japan', image: 'https://images.unsplash.com/photo-1554797589-7241bb691973?w=800&auto=format&fit=crop', category: 'Nature' },
-    { id: '13', name: 'Neon Streets', location: 'Tokyo, Japan', image: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=800&auto=format&fit=crop', category: 'Nightlife' },
   ];
 
   const performSearch = async (query: string) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      return;
-    }
-
+    if (!query.trim()) return;
     setIsSearching(true);
 
     try {
       const { data, error } = await supabase.functions.invoke('search-destinations', {
-        body: { query },
+        body: { query }
       });
 
       if (error) throw error;
 
-      if (data?.destinations && data.destinations.length > 0) {
+      if (data?.destinations && Array.isArray(data.destinations)) {
         setSearchResults(data.destinations);
+        toast.success(`Found ${data.destinations.length} destinations`);
       } else {
-        setSearchResults([]);
-        toast.info(`No results found for "${query}". Try a different search.`);
+        setSearchResults(destinations);
+        toast.info('Showing default results');
       }
     } catch (error) {
       console.error('Search error:', error);
-      toast.error('Failed to search destinations. Please try again.');
-      setSearchResults([]);
+      setSearchResults(destinations);
+      toast.error('Search failed, showing default results');
     } finally {
       setIsSearching(false);
     }
   };
 
-  // Perform search when component mounts with query from navigation
   useEffect(() => {
     if (searchQuery) {
       performSearch(searchQuery);
@@ -108,83 +93,74 @@ const Explore = () => {
   }, [searchQuery]);
 
   const handleTagClick = (tag: string) => {
-    setSelectedCategory(tag);
-    performSearch(tag);
+    setSelectedCategory(tag === selectedCategory ? '' : tag);
+    if (tag !== selectedCategory) {
+      performSearch(tag);
+    }
   };
+
+  const displayedDestinations = selectedCategory
+    ? searchResults.filter(d => d.category === selectedCategory)
+    : searchResults.length > 0
+    ? searchResults
+    : defaultDestinations;
 
   const handleSaveLocation = async (destination: any) => {
-    // Ensure we have precise coordinates; fallback to Photon (OSM) if needed
-    let lat = destination.lat || 0;
-    let lng = destination.lng || 0;
+    try {
+      let lat = destination.lat;
+      let lon = destination.lon;
 
-    if ((!lat || !lng) || (lat === 0 && lng === 0)) {
-      try {
-        const query = destination.description || `${destination.name} ${destination.city || ''} ${destination.country || ''}`;
-        const resp = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=1`);
-        if (resp.ok) {
-          const gj = await resp.json();
-          if (gj.features && gj.features.length > 0) {
-            const [plng, plat] = gj.features[0].geometry.coordinates;
-            lat = plat;
-            lng = plng;
-          }
+      if (!lat || !lon) {
+        const geocodeResponse = await fetch(
+          `https://photon.komoot.io/api/?q=${encodeURIComponent(destination.location)}&limit=1`
+        );
+        const geocodeData = await geocodeResponse.json();
+
+        if (geocodeData.features && geocodeData.features.length > 0) {
+          const coords = geocodeData.features[0].geometry.coordinates;
+          lon = coords[0];
+          lat = coords[1];
+        } else {
+          throw new Error('Could not find location coordinates');
         }
-      } catch (e) {
-        console.error('Client geocoding failed', e);
       }
+
+      const savedLocation: SavedLocation = {
+        id: destination.id,
+        name: destination.name,
+        description: destination.location,
+        image: destination.image,
+        lat,
+        lng: lon,
+        tags: [destination.category],
+        type: destination.category || 'landmark'
+      };
+
+      addLocation(savedLocation);
+      toast.success(`${destination.name} added to favorites!`);
+    } catch (error) {
+      console.error('Error saving location:', error);
+      toast.error('Failed to save location. Please try again.');
     }
-
-    const savedLocation: SavedLocation = {
-      id: destination.id,
-      name: destination.name,
-      image: destination.image,
-      description: destination.description || destination.location || "",
-      tags: destination.tags || [destination.category || destination.type || 'attraction'],
-      lat,
-      lng,
-      type: destination.type || destination.category || 'attraction',
-      city: destination.city || destination.location?.split(',')[0],
-      country: destination.country || destination.location?.split(',').pop()?.trim() || '',
-    };
-
-    if ((savedLocation.lat === 0 && savedLocation.lng === 0)) {
-      toast.error('Could not locate this place on the map. Try a more specific search.');
-      return;
-    }
-
-    addLocation(savedLocation);
-    toast.success(`${destination.name} added to your trip!`);
   };
 
-  const displayedDestinations = searchResults.length > 0 ? searchResults : defaultDestinations;
-
   return (
-    <div className="min-h-screen bg-background pt-14 relative">
-      {/* Favorites Button */}
-      <Button
-        variant="outline"
-        size="sm"
-        className="fixed top-20 right-4 z-50 shadow-lg"
+    <div className="min-h-screen bg-background">
+      <Button 
         onClick={() => setIsFavoritesPanelOpen(true)}
+        className="fixed top-20 right-4 z-40 gap-2 shadow-lg"
+        size="lg"
       >
-        <Heart className="h-4 w-4 mr-2" />
-        <span className="hidden sm:inline">Favorites</span>
-        {savedLocations.length > 0 && (
-          <span className="ml-2 bg-primary text-primary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-            {savedLocations.length}
-          </span>
-        )}
+        <Heart className="h-5 w-5" />
+        Favorites {savedLocations.length > 0 && `(${savedLocations.length})`}
       </Button>
 
       <FavoritesPanel 
-        isOpen={isFavoritesPanelOpen}
-        onClose={() => setIsFavoritesPanelOpen(false)}
+        isOpen={isFavoritesPanelOpen} 
+        onClose={() => setIsFavoritesPanelOpen(false)} 
       />
       
-      <TripSuggestionsSidebar />
-      
       <div className="flex-1 overflow-auto">
-        {/* Header with Category Filters */}
         <div className="sticky top-16 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm z-10">
           <div className="max-w-7xl mx-auto px-4 py-6">
             <div className="text-center space-y-4">
@@ -193,11 +169,10 @@ const Explore = () => {
                   Where do you want to go next?
                 </h2>
                 <p className="text-sm text-muted-foreground/80">
-                  Discover places, experiences, and hidden gems waiting for you
+                  Discover beautiful destinations and add them to your trip
                 </p>
               </div>
 
-              {/* Search Bar */}
               <div className="max-w-2xl mx-auto">
                 <form 
                   onSubmit={(e) => {
@@ -225,7 +200,6 @@ const Explore = () => {
                 </form>
               </div>
 
-              {/* Category Filter Buttons */}
               <div className="flex items-center justify-center flex-wrap gap-3">
                 {categoryTags.map((tag) => (
                   <button
@@ -245,7 +219,6 @@ const Explore = () => {
           </div>
         </div>
 
-        {/* Masonry Grid */}
         <div className="max-w-7xl mx-auto px-4 py-6">
         {isSearching ? (
           <div className="flex items-center justify-center py-20">
@@ -284,9 +257,9 @@ const Explore = () => {
                 </div>
               </div>
             </div>
-          ))}
+            ))}
           </div>
-          )}
+        )}
         </div>
       </div>
     </div>
