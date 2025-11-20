@@ -7,10 +7,14 @@ import { TripProvider } from "@/contexts/TripContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Navigation from "@/components/Navigation";
+import MobileBottomNav from "@/components/MobileBottomNav";
 import GlobalChatbot from "@/components/GlobalChatbot";
 import NewHome from "./pages/NewHome";
 import Search from "./pages/Search";
 import Explore from "./pages/Explore";
+import CheckOut from "./pages/CheckOut";
+import CreateTrip from "./pages/CreateTrip";
+import Profile from "./pages/Profile";
 import Saved from "./pages/Saved";
 import Map from "./pages/Map";
 import ItineraryView from "./pages/ItineraryView";
@@ -29,12 +33,16 @@ const App = () => (
           <BrowserRouter>
             <ThemeToggle />
             <Navigation />
+            <MobileBottomNav />
             <GlobalChatbot />
             <div className="pt-16">
               <Routes>
                 <Route path="/" element={<NewHome />} />
                 <Route path="/search" element={<Search />} />
                 <Route path="/explore" element={<Explore />} />
+                <Route path="/checkout" element={<CheckOut />} />
+                <Route path="/create-trip" element={<CreateTrip />} />
+                <Route path="/profile" element={<Profile />} />
                 <Route path="/saved" element={<Saved />} />
                 <Route path="/map" element={<Map />} />
                 <Route path="/itinerary" element={<ItineraryView />} />
