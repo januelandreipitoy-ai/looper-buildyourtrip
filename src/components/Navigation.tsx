@@ -2,9 +2,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { Compass, Calendar, DollarSign } from 'lucide-react';
 import Logo from './Logo';
 import { ThemeToggle } from './ThemeToggle';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Navigation = () => {
   const location = useLocation();
+  const isMobile = useIsMobile();
+
+  // Hide desktop navigation on mobile (show mobile bottom nav instead)
+  if (isMobile) return null;
 
   const navItems = [
     { path: '/explore', label: 'Explore', icon: Compass },
