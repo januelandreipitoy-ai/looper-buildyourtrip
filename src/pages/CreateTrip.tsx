@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Heart, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { FavoritesPanel } from '@/components/FavoritesPanel';
+import { useTrip } from '@/contexts/TripContext';
 
 interface Inspiration {
   id: string;
@@ -64,6 +67,7 @@ const inspirationImages: Inspiration[] = [
 export default function CreateTrip() {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [isFavoritesPanelOpen, setIsFavoritesPanelOpen] = useState(false);
   const { toast } = useToast();
 
   const filters = ['All', 'Popular', 'Seasonal', 'Hidden Gems', 'Food', 'Nature'];
@@ -84,8 +88,24 @@ export default function CreateTrip() {
     }
   };
 
+  const { savedLocations } = useTrip();
+
   return (
     <div className="min-h-screen bg-background pb-24">
+      {/* Favorites Button - Fixed Top Right */}
+      <Button
+        onClick={() => setIsFavoritesPanelOpen(true)}
+        size="icon"
+        className="fixed top-20 right-6 z-40 rounded-full shadow-lg"
+      >
+        <Heart className="h-5 w-5" />
+        {savedLocations.length > 0 && (
+          <Badge className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0 flex items-center justify-center">
+            {savedLocations.length}
+          </Badge>
+        )}
+      </Button>
+
       <div className="container mx-auto px-4 pt-6">
         <h1 className="text-3xl font-bold text-foreground mb-2">Create Your Trip</h1>
         <p className="text-muted-foreground mb-6">
@@ -160,6 +180,12 @@ export default function CreateTrip() {
           </div>
         )}
       </div>
+
+      {/* Favorites Panel */}
+      <FavoritesPanel
+        isOpen={isFavoritesPanelOpen}
+        onClose={() => setIsFavoritesPanelOpen(false)}
+      />
     </div>
   );
 }

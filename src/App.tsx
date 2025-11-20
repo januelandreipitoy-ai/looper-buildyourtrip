@@ -12,7 +12,7 @@ import GlobalChatbot from "@/components/GlobalChatbot";
 import NewHome from "./pages/NewHome";
 import Search from "./pages/Search";
 import Explore from "./pages/Explore";
-import CheckOut from "./pages/CheckOut";
+import Popular from "./pages/Popular";
 import CreateTrip from "./pages/CreateTrip";
 import Profile from "./pages/Profile";
 import Saved from "./pages/Saved";
@@ -40,7 +40,7 @@ const App = () => (
                 <Route path="/" element={<NewHome />} />
                 <Route path="/search" element={<Search />} />
                 <Route path="/explore" element={<Explore />} />
-                <Route path="/checkout" element={<CheckOut />} />
+                <Route path="/popular" element={<Popular />} />
                 <Route path="/create-trip" element={<CreateTrip />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/saved" element={<Saved />} />
