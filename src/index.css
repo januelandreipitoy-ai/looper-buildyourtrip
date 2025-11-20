@@ -8,44 +8,44 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Ivory base color */
-    --background: 57 100% 96%;
-    --foreground: 258 30% 25%;
+    /* Off-White / Ivory base */
+    --background: 45 47% 96%;
+    --foreground: 200 64% 15%;
 
-    --card: 57 100% 98%;
-    --card-foreground: 258 30% 25%;
+    --card: 45 47% 98%;
+    --card-foreground: 200 64% 15%;
 
-    --popover: 57 100% 98%;
-    --popover-foreground: 258 30% 25%;
+    --popover: 45 47% 98%;
+    --popover-foreground: 200 64% 15%;
 
-    /* Pear - main accent color */
-    --primary: 65 66% 54%;
-    --primary-foreground: 258 30% 25%;
+    /* Soft Coral - primary buttons */
+    --primary: 18 88% 67%;
+    --primary-foreground: 200 64% 15%;
 
-    /* Indigo - secondary accent */
-    --secondary: 258 73% 74%;
-    --secondary-foreground: 57 100% 96%;
+    /* Forest Green - secondary */
+    --secondary: 157 55% 27%;
+    --secondary-foreground: 45 47% 96%;
 
-    /* Muted pear tones */
-    --muted: 65 50% 85%;
-    --muted-foreground: 258 20% 40%;
+    /* Olive Green - muted */
+    --muted: 65 56% 55%;
+    --muted-foreground: 200 40% 30%;
 
-    /* Indigo accent */
-    --accent: 258 73% 74%;
-    --accent-foreground: 57 100% 96%;
+    /* Lavender Purple - accent */
+    --accent: 249 71% 82%;
+    --accent-foreground: 200 64% 15%;
 
-    /* Softer pear variant */
-    --warm-brown: 65 50% 65%;
-    --warm-brown-foreground: 258 30% 25%;
+    /* Burnt Orange - warm variant */
+    --burnt-orange: 18 72% 56%;
+    --burnt-orange-foreground: 45 47% 96%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 57 100% 96%;
+    --destructive-foreground: 45 47% 96%;
 
-    --border: 65 40% 85%;
-    --input: 65 40% 90%;
-    --ring: 65 66% 54%;
+    --border: 200 30% 85%;
+    --input: 200 20% 90%;
+    --ring: 18 88% 67%;
 
-    --logo: 255 93% 90%; /* Soft Peach #FFE8D2 */
+    --logo: 65 56% 55%; /* Olive Green for logo text */
 
     --sidebar-background: 0 0% 98%;
 
@@ -65,38 +65,38 @@ All colors MUST be HSL.
   }
 
   .dark {
-    /* Dark ivory tones */
-    --background: 258 25% 12%;
-    --foreground: 57 100% 96%;
+    /* Deep Navy dark tones */
+    --background: 200 64% 12%;
+    --foreground: 45 47% 96%;
 
-    --card: 258 25% 15%;
-    --card-foreground: 57 100% 96%;
+    --card: 200 64% 15%;
+    --card-foreground: 45 47% 96%;
 
-    --popover: 258 25% 15%;
-    --popover-foreground: 57 100% 96%;
+    --popover: 200 64% 15%;
+    --popover-foreground: 45 47% 96%;
 
-    /* Pear - main accent color */
-    --primary: 65 66% 54%;
-    --primary-foreground: 258 30% 15%;
+    /* Soft Coral - primary */
+    --primary: 18 88% 67%;
+    --primary-foreground: 200 64% 12%;
 
-    /* Indigo - secondary accent */
-    --secondary: 258 73% 74%;
-    --secondary-foreground: 258 30% 15%;
+    /* Forest Green - secondary */
+    --secondary: 157 55% 35%;
+    --secondary-foreground: 45 47% 96%;
 
     /* Muted dark tones */
-    --muted: 258 20% 25%;
-    --muted-foreground: 57 60% 75%;
+    --muted: 200 30% 25%;
+    --muted-foreground: 45 47% 75%;
 
-    /* Indigo accent */
-    --accent: 258 73% 74%;
-    --accent-foreground: 258 30% 15%;
+    /* Lavender accent */
+    --accent: 249 71% 82%;
+    --accent-foreground: 200 64% 12%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 57 100% 96%;
+    --destructive-foreground: 45 47% 96%;
 
-    --border: 258 20% 25%;
-    --input: 258 20% 25%;
-    --ring: 65 66% 54%;
+    --border: 200 30% 25%;
+    --input: 200 30% 25%;
+    --ring: 18 88% 67%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
