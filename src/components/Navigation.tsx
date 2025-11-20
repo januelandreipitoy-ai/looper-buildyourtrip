@@ -24,7 +24,7 @@ const Navigation = () => {
                 to={path}
                 className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-all duration-300 text-xs sm:text-base ${
                   location.pathname === path
-                    ? 'bg-gradient-to-r from-primary via-accent to-secondary text-white shadow-lg'
+                    ? 'bg-primary text-primary-foreground shadow-lg'
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                 }`}
               >

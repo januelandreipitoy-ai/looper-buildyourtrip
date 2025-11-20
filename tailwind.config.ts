@@ -51,6 +51,10 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         logo: "hsl(var(--logo))",
+        "burnt-orange": {
+          DEFAULT: "hsl(var(--burnt-orange))",
+          foreground: "hsl(var(--burnt-orange-foreground))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
