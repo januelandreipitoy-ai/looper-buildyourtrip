@@ -1,7 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Compass, Calendar, DollarSign } from 'lucide-react';
 import Logo from './Logo';
-import { ThemeToggle } from './ThemeToggle';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const Navigation = () => {
@@ -37,7 +36,6 @@ const Navigation = () => {
                 <span className="hidden xs:inline">{label}</span>
               </Link>
             ))}
-            <ThemeToggle />
           </div>
         </div>
       </div>

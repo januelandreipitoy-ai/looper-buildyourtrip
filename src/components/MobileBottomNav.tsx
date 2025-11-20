@@ -10,7 +10,7 @@ const MobileBottomNav = () => {
 
   const navItems = [
     { path: '/', label: 'Home', icon: Home },
-    { path: '/checkout', label: 'Check Out', icon: Star },
+    { path: '/popular', label: 'Popular', icon: Star },
     { path: '/create-trip', label: 'Create', icon: Plus, isCenter: true },
     { path: '/itinerary', label: 'Itinerary', icon: Map },
     { path: '/profile', label: 'Profile', icon: User },
@@ -19,24 +19,21 @@ const MobileBottomNav = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-secondary border-t border-border/20 pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 z-[100] bg-[hsl(var(--forest-green))] border-t border-border/20 pb-safe">
       <div className="flex items-center justify-around px-4 py-3">
         {navItems.map(({ path, label, icon: Icon, isCenter }) => (
           <Link
             key={path}
             to={path}
-            className={`flex flex-col items-center gap-1 transition-all duration-200 ${
+            className={`flex items-center justify-center transition-all duration-200 ${
               isCenter
-                ? 'relative -top-4 bg-primary text-primary-foreground rounded-full p-4 shadow-lg scale-110'
+                ? 'relative -top-4 bg-[hsl(var(--soft-coral))] text-white rounded-full p-4 shadow-lg'
                 : isActive(path)
-                ? 'text-primary scale-105'
-                : 'text-muted-foreground'
+                ? 'text-[hsl(var(--soft-coral))]'
+                : 'text-white/80'
             }`}
           >
-            <Icon className={isCenter ? 'h-6 w-6' : 'h-5 w-5'} />
-            {!isCenter && (
-              <span className="text-[10px] font-medium">{label}</span>
-            )}
+            <Icon className={isCenter ? 'h-7 w-7' : 'h-6 w-6'} />
           </Link>
         ))}
       </div>

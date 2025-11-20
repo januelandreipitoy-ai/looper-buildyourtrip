@@ -52,13 +52,13 @@ const mockItineraries: CommunityItinerary[] = [
   },
 ];
 
-export default function CheckOut() {
+export default function Popular() {
   const [activeTab, setActiveTab] = useState<'forYou' | 'trending' | 'templates'>('forYou');
 
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="container mx-auto px-4 pt-6">
-        <h1 className="text-3xl font-bold text-foreground mb-6">Check Out</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-6">Popular</h1>
 
         {/* Tabs */}
         <div className="flex gap-2 mb-6">
@@ -99,7 +99,7 @@ export default function CheckOut() {
           {mockItineraries.map((itinerary) => (
             <Card
               key={itinerary.id}
-              className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+              className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer rounded-2xl"
             >
               <div className="relative">
                 <img

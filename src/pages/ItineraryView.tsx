@@ -118,13 +118,13 @@ const ItineraryView = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Button onClick={() => setIsAISidebarOpen(true)} className="fixed bottom-6 right-6 z-50 rounded-full w-14 h-14 shadow-lg" size="icon">
+      <Button onClick={() => setIsAISidebarOpen(true)} className="fixed bottom-6 right-6 z-[60] rounded-full w-14 h-14 shadow-lg" size="icon">
         <MessageCircle className="h-6 w-6" />
       </Button>
       <ItineraryAISidebar isOpen={isAISidebarOpen} onClose={() => setIsAISidebarOpen(false)} />
 
       <div className="hidden md:block">
-        <div className="bg-card border-b p-4 sticky top-16 z-10">
+        <div className="bg-card border-b p-4 sticky top-16 z-[20]">
           <div className="container mx-auto">
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-2xl font-bold">{searchParams?.destination || 'Your Itinerary'}</h1>
@@ -139,8 +139,8 @@ const ItineraryView = () => {
             </ScrollArea>
           </div>
         </div>
-        <div className="h-[50vh] w-full"><OSRMItineraryMap day={currentDay} highlightedLocation={highlightedLocation} onLocationClick={setHighlightedLocation} /></div>
-        <div className={`container mx-auto p-6 transition-opacity duration-300 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+        <div className="h-[50vh] w-full z-[1]"><OSRMItineraryMap day={currentDay} highlightedLocation={highlightedLocation} onLocationClick={setHighlightedLocation} /></div>
+        <div className={`container mx-auto p-6 z-[10] relative transition-opacity duration-300 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
           <h2 className="text-2xl font-bold mb-6">Day {selectedDay} Itinerary</h2>
           <div className="grid gap-6">
             {timeSlots.map(({ period, slot }, index) => {
@@ -170,7 +170,7 @@ const ItineraryView = () => {
       </div>
 
       <div className="md:hidden min-h-screen flex flex-col pt-16">
-        <div className="sticky top-16 bg-card border-b p-3 z-10">
+        <div className="sticky top-16 bg-card border-b p-3 z-[20]">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-bold">{searchParams?.destination || 'Itinerary'}</h2>
             <Button onClick={handleDownloadPDF} variant="outline" size="sm"><Download className="h-4 w-4" /></Button>

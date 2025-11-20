@@ -81,6 +81,14 @@ export default function NewHome() {
   const mapRef = useRef<any>(null);
   const [hoveredCluster, setHoveredCluster] = useState<string | null>(null);
   const [tappedCluster, setTappedCluster] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
@@ -184,17 +192,18 @@ export default function NewHome() {
         className="absolute inset-0 w-full h-full"
       />
 
-      {/* CTA Button at Bottom Center */}
-      <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-[1000] animate-fade-in">
-        <Button
-          size="lg"
-          onClick={() => navigate('/search')}
-          className="bg-gradient-to-r from-primary via-accent to-secondary hover:opacity-90 text-white border-0 shadow-2xl text-base sm:text-lg px-8 sm:px-10 py-4 sm:py-6"
-        >
-          <Compass className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
-          Start Looping
-        </Button>
-      </div>
+      {/* Start Looping Button - Web Only */}
+      {!isMobile && (
+        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-[1000] animate-fade-in">
+          <Button
+            size="lg"
+            onClick={() => navigate('/create-trip')}
+            className="text-lg px-8 py-6 shadow-2xl rounded-2xl"
+          >
+            Start Looping
+          </Button>
+        </div>
+      )}
 
       {/* Photo Cluster Styles */}
       <style>{`

@@ -14,6 +14,7 @@ interface Message {
 const GlobalChatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
@@ -23,6 +24,13 @@ const GlobalChatbot = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -78,6 +86,11 @@ const GlobalChatbot = () => {
       handleSend();
     }
   };
+
+  // Hide on mobile
+  if (isMobile) {
+    return null;
+  }
 
   if (!isOpen) {
     return (
