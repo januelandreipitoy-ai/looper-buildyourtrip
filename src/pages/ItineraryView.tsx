@@ -173,15 +173,62 @@ const ItineraryView = () => {
         <div className="sticky top-16 bg-card border-b p-3 z-[20]">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-bold">{searchParams?.destination || 'Itinerary'}</h2>
-            <Button onClick={handleDownloadPDF} variant="outline" size="sm"><Download className="h-4 w-4" /></Button>
+            <Button onClick={handleDownloadPDF} variant="outline" size="sm" className="rounded-full"><Download className="h-4 w-4" /></Button>
           </div>
-          <ScrollArea className="w-full"><div className="flex gap-2">{aiItinerary.days.map(day => <Button key={day.dayNumber} onClick={() => handleDaySelect(day.dayNumber)} variant={selectedDay === day.dayNumber ? 'default' : 'outline'} size="sm" className="whitespace-nowrap">Day {day.dayNumber}</Button>)}</div></ScrollArea>
+          <ScrollArea className="w-full"><div className="flex gap-2">{aiItinerary.days.map(day => <Button key={day.dayNumber} onClick={() => handleDaySelect(day.dayNumber)} variant={selectedDay === day.dayNumber ? 'default' : 'outline'} size="sm" className="whitespace-nowrap rounded-2xl">Day {day.dayNumber}</Button>)}</div></ScrollArea>
         </div>
-        <div className="flex-1"><OSRMItineraryMap day={currentDay} highlightedLocation={highlightedLocation} onLocationClick={setHighlightedLocation} /></div>
-        <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen}>
-          <SheetTrigger asChild><Button className="fixed bottom-20 left-1/2 -translate-x-1/2 z-20 shadow-xl" size="lg">View Itinerary</Button></SheetTrigger>
-          <SheetContent side="bottom" className="h-[75vh]"><ScrollArea className="h-full px-4 py-4"><h2 className="text-xl font-bold mb-4">Day {selectedDay}</h2><div className="space-y-3">{timeSlots.map(({ period, slot }, index) => { if (!slot?.location) return null; return (<Card key={index} onClick={() => setHighlightedLocation(slot.location.name)}>{slot.location.image && <img src={slot.location.image} alt={slot.location.name} className="w-full h-32 object-cover" />}<CardContent className="p-4"><div className="flex items-center gap-2 mb-2"><span className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-bold">{index + 1}</span><h3 className="font-bold text-sm">{slot.location.name}</h3></div><div className="text-xs text-muted-foreground"><Clock className="h-3 w-3 inline mr-1" />{period} • {slot.time}</div></CardContent></Card>);})}</div></ScrollArea></SheetContent>
-        </Sheet>
+        
+        {/* Mobile: 1/3 Map, 2/3 Itinerary List */}
+        <div className="h-[33vh] w-full z-[1]">
+          <OSRMItineraryMap day={currentDay} highlightedLocation={highlightedLocation} onLocationClick={setHighlightedLocation} />
+        </div>
+        
+        <div className="flex-1 bg-background z-[10] overflow-y-auto pb-20">
+          <div className="px-4 py-4">
+            <h2 className="text-xl font-bold mb-4">Day {selectedDay}</h2>
+            <div className="space-y-3">
+              {timeSlots.map(({ period, slot }, index) => {
+                if (!slot?.location) return null;
+                return (
+                  <Card 
+                    key={index} 
+                    onClick={() => setHighlightedLocation(slot.location.name)}
+                    className="overflow-hidden rounded-2xl hover:shadow-md transition-shadow"
+                  >
+                    {slot.location.image && (
+                      <img 
+                        src={slot.location.image} 
+                        alt={slot.location.name} 
+                        className="w-full h-32 object-cover" 
+                      />
+                    )}
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-bold">
+                          {index + 1}
+                        </span>
+                        <h3 className="font-bold text-sm">{slot.location.name}</h3>
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        <Clock className="h-3 w-3 inline mr-1" />
+                        {period} • {slot.time}
+                      </div>
+                      {slot.activities && slot.activities.length > 0 && (
+                        <div className="mt-2">
+                          <ul className="text-xs space-y-1">
+                            {slot.activities.map((activity, i) => (
+                              <li key={i} className="text-muted-foreground">• {activity}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -96,24 +96,20 @@ export default function CreateTrip() {
       <Button
         onClick={() => setIsFavoritesPanelOpen(true)}
         size="icon"
+        variant="secondary"
         className="fixed top-20 right-6 z-40 rounded-full shadow-lg"
       >
         <Heart className="h-5 w-5" />
         {savedLocations.length > 0 && (
-          <Badge className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0 flex items-center justify-center">
+          <Badge className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0 flex items-center justify-center bg-[hsl(var(--soft-coral))] text-white">
             {savedLocations.length}
           </Badge>
         )}
       </Button>
 
       <div className="container mx-auto px-4 pt-6">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Create Your Trip</h1>
-        <p className="text-muted-foreground mb-6">
-          Explore and add places to your custom itinerary
-        </p>
-
         {/* Filters */}
-        <div className="flex gap-2 overflow-x-auto pb-4 mb-6 scrollbar-hide">
+        <div className="flex gap-2 overflow-x-auto pb-4 mb-4 scrollbar-hide">
           {filters.map((filter) => (
             <Badge
               key={filter}
@@ -127,11 +123,11 @@ export default function CreateTrip() {
         </div>
 
         {/* Pinterest-style Masonry Grid */}
-        <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
+        <div className="columns-2 md:columns-3 lg:columns-4 gap-2 space-y-2">
           {inspirationImages.map((item) => (
             <div
               key={item.id}
-              className="relative break-inside-avoid mb-4 group cursor-pointer"
+              className="relative break-inside-avoid mb-2 group cursor-pointer"
               onClick={() => toggleLocation(item.id)}
             >
               <div className="relative overflow-hidden rounded-2xl">
