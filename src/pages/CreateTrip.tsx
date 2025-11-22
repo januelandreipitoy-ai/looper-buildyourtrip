@@ -5,6 +5,7 @@ import { Heart, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { FavoritesPanel } from '@/components/FavoritesPanel';
 import { useTrip } from '@/contexts/TripContext';
+import { SimpleSearchBar } from '@/components/SimpleSearchBar';
 
 interface Inspiration {
   id: string;
@@ -91,13 +92,13 @@ export default function CreateTrip() {
   const { savedLocations } = useTrip();
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-24 md:pl-20">
       {/* Favorites Button - Fixed Top Right */}
       <Button
         onClick={() => setIsFavoritesPanelOpen(true)}
         size="icon"
         variant="secondary"
-        className="fixed top-20 right-6 z-40 rounded-full shadow-lg"
+        className="fixed top-6 right-6 z-40 rounded-full shadow-lg"
       >
         <Heart className="h-5 w-5" />
         {savedLocations.length > 0 && (
@@ -108,6 +109,10 @@ export default function CreateTrip() {
       </Button>
 
       <div className="container mx-auto px-4 pt-6">
+        {/* Search Bar */}
+        <div className="mb-6">
+          <SimpleSearchBar placeholder="Search destinations to add to your trip..." />
+        </div>
         {/* Filters */}
         <div className="flex gap-2 overflow-x-auto pb-4 mb-4 scrollbar-hide">
           {filters.map((filter) => (
@@ -123,11 +128,11 @@ export default function CreateTrip() {
         </div>
 
         {/* Pinterest-style Masonry Grid */}
-        <div className="columns-2 md:columns-3 lg:columns-4 gap-2 space-y-2">
+        <div className="columns-2 md:columns-3 lg:columns-4 gap-1 space-y-1">
           {inspirationImages.map((item) => (
             <div
               key={item.id}
-              className="relative break-inside-avoid mb-2 group cursor-pointer"
+              className="relative break-inside-avoid mb-1 group cursor-pointer"
               onClick={() => toggleLocation(item.id)}
             >
               <div className="relative overflow-hidden rounded-2xl">

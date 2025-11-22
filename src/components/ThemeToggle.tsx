@@ -1,9 +1,18 @@
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/ThemeProvider";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useLocation } from "react-router-dom";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const isMobile = useIsMobile();
+  const location = useLocation();
+  
+  // On mobile, only show on profile page
+  if (isMobile && location.pathname !== '/profile') {
+    return null;
+  }
 
   return (
     <Button

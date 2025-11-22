@@ -169,17 +169,17 @@ const ItineraryView = () => {
         </div>
       </div>
 
-      <div className="md:hidden min-h-screen flex flex-col pt-16">
-        <div className="sticky top-16 bg-card border-b p-3 z-[20]">
+      <div className="md:hidden min-h-screen flex flex-col">
+        <div className="sticky top-0 bg-card border-b p-3 z-[20]">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-bold">{searchParams?.destination || 'Itinerary'}</h2>
             <Button onClick={handleDownloadPDF} variant="outline" size="sm" className="rounded-full"><Download className="h-4 w-4" /></Button>
           </div>
-          <ScrollArea className="w-full"><div className="flex gap-2">{aiItinerary.days.map(day => <Button key={day.dayNumber} onClick={() => handleDaySelect(day.dayNumber)} variant={selectedDay === day.dayNumber ? 'default' : 'outline'} size="sm" className="whitespace-nowrap rounded-2xl">Day {day.dayNumber}</Button>)}</div></ScrollArea>
+          <ScrollArea className="w-full"><div className="flex gap-2">{aiItinerary.days.map(day => <Button key={day.dayNumber} onClick={() => handleDaySelect(day.dayNumber)} variant={selectedDay === day.dayNumber ? 'default' : 'outline'} size="sm" className="whitespace-nowrap rounded-2xl bg-[hsl(var(--soft-coral))]">Day {day.dayNumber}</Button>)}</div></ScrollArea>
         </div>
         
         {/* Mobile: 1/3 Map, 2/3 Itinerary List */}
-        <div className="h-[33vh] w-full z-[1]">
+        <div className="h-[33vh] w-full z-[1] relative">
           <OSRMItineraryMap day={currentDay} highlightedLocation={highlightedLocation} onLocationClick={setHighlightedLocation} />
         </div>
         
@@ -193,31 +193,31 @@ const ItineraryView = () => {
                   <Card 
                     key={index} 
                     onClick={() => setHighlightedLocation(slot.location.name)}
-                    className="overflow-hidden rounded-2xl hover:shadow-md transition-shadow"
+                    className="overflow-hidden rounded-3xl hover:shadow-md transition-shadow bg-gradient-to-br from-[hsl(var(--soft-coral))]/10 to-transparent border-2 border-[hsl(var(--soft-coral))]/20"
                   >
                     {slot.location.image && (
                       <img 
                         src={slot.location.image} 
                         alt={slot.location.name} 
-                        className="w-full h-32 object-cover" 
+                        className="w-full h-36 object-cover" 
                       />
                     )}
-                    <CardContent className="p-4">
+                    <CardContent className="p-4 bg-white/50 backdrop-blur-sm">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-bold">
+                        <span className="w-7 h-7 bg-[hsl(var(--soft-coral))] text-white rounded-full flex items-center justify-center text-xs font-bold shadow-md">
                           {index + 1}
                         </span>
-                        <h3 className="font-bold text-sm">{slot.location.name}</h3>
+                        <h3 className="font-bold text-sm text-[hsl(var(--deep-navy))]">{slot.location.name}</h3>
                       </div>
-                      <div className="text-xs text-muted-foreground">
-                        <Clock className="h-3 w-3 inline mr-1" />
+                      <div className="text-xs text-[hsl(var(--deep-navy))]/70 font-medium flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
                         {period} • {slot.time}
                       </div>
                       {slot.activities && slot.activities.length > 0 && (
-                        <div className="mt-2">
+                        <div className="mt-3 pt-3 border-t border-[hsl(var(--soft-coral))]/20">
                           <ul className="text-xs space-y-1">
                             {slot.activities.map((activity, i) => (
-                              <li key={i} className="text-muted-foreground">• {activity}</li>
+                              <li key={i} className="text-[hsl(var(--deep-navy))]/60">✨ {activity}</li>
                             ))}
                           </ul>
                         </div>

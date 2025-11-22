@@ -5,8 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { TripProvider } from "@/contexts/TripContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import Navigation from "@/components/Navigation";
+import Sidebar from "@/components/Sidebar";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import GlobalChatbot from "@/components/GlobalChatbot";
 import NewHome from "./pages/NewHome";
@@ -31,11 +31,11 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <ThemeToggle />
             <Navigation />
+            <Sidebar />
             <MobileBottomNav />
             <GlobalChatbot />
-            <div className="pt-16">
+            <div className="md:pt-0">
               <Routes>
                 <Route path="/" element={<NewHome />} />
                 <Route path="/search" element={<Search />} />
