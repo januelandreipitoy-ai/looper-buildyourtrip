@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { GenerateItineraryButton } from '@/components/GenerateItineraryButton';
 import { HeartButton } from '@/components/HeartButton';
 import { DestinationDetailPopup } from '@/components/DestinationDetailPopup';
+import { useIsMobile } from '@/hooks/use-mobile';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,6 +40,7 @@ export const FavoritesPanel = ({ isOpen, onClose }: FavoritesPanelProps) => {
     clearAllSavedLocations
   } = useTrip();
   
+  const isMobile = useIsMobile();
   const [expandedBookmarks, setExpandedBookmarks] = useState<Set<string>>(new Set());
   const [editingBookmarkId, setEditingBookmarkId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
@@ -47,6 +49,7 @@ export const FavoritesPanel = ({ isOpen, onClose }: FavoritesPanelProps) => {
   const [draggedLocation, setDraggedLocation] = useState<SavedLocation | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<SavedLocation | null>(null);
   const [isDetailPopupOpen, setIsDetailPopupOpen] = useState(false);
+  const [showAddToBookmark, setShowAddToBookmark] = useState<string | null>(null);
 
   const toggleBookmark = (id: string) => {
     const newExpanded = new Set(expandedBookmarks);
@@ -324,7 +327,42 @@ export const FavoritesPanel = ({ isOpen, onClose }: FavoritesPanelProps) => {
                             ))}
                           </div>
                         </div>
-                        <div onClick={(e) => e.stopPropagation()}>
+                        <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                          {isMobile && bookmarks.length > 0 && (
+                            <div className="relative">
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                className="h-8 w-8 rounded-full"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setShowAddToBookmark(showAddToBookmark === location.id ? null : location.id);
+                                }}
+                              >
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                              {showAddToBookmark === location.id && (
+                                <div className="absolute right-0 top-10 bg-popover border rounded-lg shadow-lg p-2 z-50 min-w-[150px]">
+                                  {bookmarks.map(bookmark => (
+                                    <Button
+                                      key={bookmark.id}
+                                      variant="ghost"
+                                      size="sm"
+                                      className="w-full justify-start"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        addLocationToBookmark(bookmark.id, location.id);
+                                        setShowAddToBookmark(null);
+                                        toast.success('Added to bookmark');
+                                      }}
+                                    >
+                                      {bookmark.name}
+                                    </Button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
                           <HeartButton 
                             isSaved={true}
                             onClick={() => removeLocation(location.id)}

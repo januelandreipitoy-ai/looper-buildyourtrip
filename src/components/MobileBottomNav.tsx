@@ -19,7 +19,7 @@ const MobileBottomNav = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-[100] bg-[hsl(var(--forest-green))] border-t border-border/20 pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 z-[100] bg-[hsl(var(--forest-green))] border-t border-[hsl(var(--forest-green))] pb-safe shadow-lg">
       <div className="flex items-center justify-around px-4 py-3">
         {navItems.map(({ path, label, icon: Icon, isCenter }) => (
           <Link
@@ -27,10 +27,10 @@ const MobileBottomNav = () => {
             to={path}
             className={`flex items-center justify-center transition-all duration-200 ${
               isCenter
-                ? 'relative -top-4 bg-[hsl(var(--soft-coral))] text-white rounded-full p-4 shadow-lg'
+                ? 'relative -top-4 bg-[hsl(var(--soft-coral))] text-white rounded-full p-4 shadow-lg hover:scale-110 active:scale-95'
                 : isActive(path)
-                ? 'text-[hsl(var(--soft-coral))]'
-                : 'text-white/80'
+                ? 'text-[hsl(var(--soft-coral))] scale-110'
+                : 'text-white hover:text-white/90'
             }`}
           >
             <Icon className={isCenter ? 'h-7 w-7' : 'h-6 w-6'} />

@@ -1,7 +1,8 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Compass, Calendar, DollarSign } from 'lucide-react';
+import { Home, Star, Plus, Map, User, DollarSign } from 'lucide-react';
 import Logo from './Logo';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ThemeToggle } from './ThemeToggle';
 
 const Navigation = () => {
   const location = useLocation();
@@ -11,8 +12,11 @@ const Navigation = () => {
   if (isMobile) return null;
 
   const navItems = [
-    { path: '/explore', label: 'Explore', icon: Compass },
-    { path: '/itinerary', label: 'Itinerary', icon: Calendar },
+    { path: '/', label: 'Home', icon: Home },
+    { path: '/popular', label: 'Popular', icon: Star },
+    { path: '/create-trip', label: 'Create Trip', icon: Plus },
+    { path: '/itinerary', label: 'Itinerary', icon: Map },
+    { path: '/profile', label: 'Profile', icon: User },
     { path: '/pricing', label: 'Pricing', icon: DollarSign },
   ];
 
@@ -26,16 +30,17 @@ const Navigation = () => {
               <Link
                 key={path}
                 to={path}
-                className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-all duration-300 text-xs sm:text-base ${
+                className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-2xl font-medium transition-all duration-300 text-xs sm:text-sm ${
                   location.pathname === path
                     ? 'bg-primary text-primary-foreground shadow-lg'
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                 }`}
               >
                 <Icon className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden xs:inline">{label}</span>
+                <span className="hidden md:inline">{label}</span>
               </Link>
             ))}
+            <ThemeToggle />
           </div>
         </div>
       </div>
