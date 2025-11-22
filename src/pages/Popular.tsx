@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MapPin, Heart, Share2 } from 'lucide-react';
+import { SimpleSearchBar } from '@/components/SimpleSearchBar';
 
 interface CommunityItinerary {
   id: string;
@@ -89,8 +90,12 @@ export default function Popular() {
     : mockItineraries.filter(it => it.vibe === activeVibe);
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-24 md:pl-20">
       <div className="container mx-auto px-4 pt-6">
+        {/* Search Bar */}
+        <div className="mb-6">
+          <SimpleSearchBar placeholder="Search community itineraries..." />
+        </div>
         <h1 className="text-3xl font-bold text-foreground mb-6">Popular</h1>
 
         {/* Main Tabs */}

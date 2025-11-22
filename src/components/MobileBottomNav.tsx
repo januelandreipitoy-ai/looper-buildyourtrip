@@ -20,7 +20,7 @@ const MobileBottomNav = () => {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-[100] bg-[hsl(var(--forest-green))] border-t border-[hsl(var(--forest-green))] pb-safe shadow-lg">
-      <div className="flex items-center justify-around px-4 py-3">
+      <div className="flex items-center justify-around px-4 py-2">
         {navItems.map(({ path, label, icon: Icon, isCenter }) => (
           <Link
             key={path}
